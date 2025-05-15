@@ -11,7 +11,9 @@ const Header = () => {
             {/* Top row: logo + title */}
             <div className="d-flex align-items-center mb-3">
                 <img src={logo} alt="10th Step Logo" height={60} className="me-3" />
-                <h1 className="h3 m-0">10th Step Journal</h1>
+                <h1 className="m-0" style={{ fontSize: '1.8rem' }}>
+                    10th Step Journal
+                </h1>
             </div>
 
             {/* Bottom row: toggle left, hamburger right */}
