@@ -7,7 +7,7 @@ const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false)
 
     return (
-        <header className="border-bottom p-4">
+        <header className="border-bottom pt-1 pb-4 pe-2 ps-2">
             {/* Top row: logo + title */}
             <div className="d-flex align-items-center mb-3">
                 <img src={logo} alt="10th Step Logo" height={60} className="me-3" />
@@ -23,9 +23,9 @@ const Header = () => {
                     className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
                     onClick={toggleDarkMode}
                     aria-label="Toggle dark mode"
-                    style={{ fontSize: '1rem', width: 'fit-content' }}
+                    style={{ fontSize: '.9rem', width: 'fit-content' }}
                 >
-                    {darkMode ? '🌞' : '🌙'}
+                    {darkMode ? 'Light' : 'Dark'}
                 </button>
 
                 {/* Hamburger menu button (right) */}
