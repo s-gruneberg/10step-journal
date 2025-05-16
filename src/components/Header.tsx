@@ -6,6 +6,8 @@ import { useState } from 'react'
 const Header = () => {
     const { darkMode, toggleDarkMode } = useDarkMode()
     const [expanded, setExpanded] = useState(false)
+    const toggleBtnClass = `btn btn-sm toggle-theme-btn ${darkMode ? 'btn-light' : 'btn-dark'}`
+
 
     return (
         <nav
@@ -18,10 +20,13 @@ const Header = () => {
                     <span style={{ fontSize: '1.8rem' }}>10th Step Journal</span>
                 </Link>
 
-                {/* Dark mode toggle */}
+                {/* Dark mode toggle - mobile */}
                 <button
                     onClick={toggleDarkMode}
-                    className="btn btn-outline-secondary btn-sm me-5 d-md-none"
+                    className={`${toggleBtnClass} me-5 d-md-none`}
+                    style={{
+                        minWidth: "55px"
+                    }}
                 >
                     {darkMode ? 'Light' : 'Dark'}
                 </button>
@@ -35,7 +40,7 @@ const Header = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                {/* Collapsible nav menu */}
+                {/* Nav menu with desktop toggle */}
                 <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`}>
                     <ul className="navbar-nav ms-auto">
                         <li className="nav-item">
@@ -48,11 +53,10 @@ const Header = () => {
                                 About
                             </NavLink>
                         </li>
-                        {/* Optional: show dark mode toggle on desktop */}
                         <li className="nav-item d-none d-md-block">
                             <button
                                 onClick={toggleDarkMode}
-                                className="btn btn-outline-secondary btn-sm ms-2"
+                                className={`${toggleBtnClass} ms-2`}
                             >
                                 {darkMode ? 'Light' : 'Dark'}
                             </button>

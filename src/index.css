@@ -41,15 +41,6 @@ body.dark .themed-textarea {
     color: #eee;
 }
 
-/* Custom hover style */
-.nav-link:hover {
-    background-color: #adcbf7;
-    /* Bootstrap primary blue */
-    color: white !important;
-    text-decoration: none;
-    cursor: pointer;
-}
-
 
 /* logo home button */
 .logo-link,
