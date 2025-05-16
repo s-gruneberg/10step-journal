@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import Questions from '../components/Questions'
 import { getQuestions } from '../localStorageUtils.ts'
-import { downloadAsPDF } from '../downloadUtils.ts'
+import { downloadAsPDF, downloadAsWord, downloadAsText } from '../downloadUtils.ts'
+
 
 export default function Home() {
   const questions = getQuestions()
@@ -13,11 +14,15 @@ export default function Home() {
     setAnswers(newAnswers)
   }
 
-  const handleDownload = () => {
-    const qaPairs = questions.map((q, i) => ({ q, a: answers[i] || '' }))
-    const title = `10th Step Journal - ${new Date().toLocaleDateString()}`
-    downloadAsPDF(title, qaPairs)
-  }
+  const handleDownload = (downloadFn: (title: string, qaPairs: { q: string; a: string }[]) => void) => {
+    const qaPairs = questions.map((q, i) => ({ q, a: answers[i] || '' }));
+    const now = new Date()
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    const dateString = now.toLocaleDateString()
+    const title = `10th Step Journal - ${dateString} ${timeString}`
+
+    downloadFn(title, qaPairs);
+  };
 
   return (
     <>
@@ -32,12 +37,42 @@ export default function Home() {
         onAnswerChange={handleAnswerChange}
       />
       <div className="d-flex justify-content-end">
-        <button
-          className="btn btn-primary btn-success"
-          onClick={handleDownload}
-        >
-          Download
-        </button>
+
+
+        <div className="dropdown">
+          <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown button
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => handleDownload(downloadAsPDF)}
+              >
+                Download PDF
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => handleDownload(downloadAsWord)}
+              >
+                Download Word
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => handleDownload(downloadAsText)}
+              >
+                Download Text
+              </button>
+            </li>
+          </ul>
+
+        </div>
+
+
       </div>
     </>
 
