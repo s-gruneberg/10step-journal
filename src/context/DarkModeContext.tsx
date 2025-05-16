@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
+import { loadJournalData, saveJournalData } from '../localStorageUtils' // adjust path as needed
 
 interface DarkModeContextType {
     darkMode: boolean
@@ -9,21 +10,16 @@ interface DarkModeContextType {
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined)
 
 export const DarkModeProvider = ({ children }: { children: ReactNode }) => {
-    // 1. Initialize from localStorage or fallback to system preference
     const [darkMode, setDarkMode] = useState(() => {
-        if (typeof window === 'undefined') return false // SSR safe
-
-        const stored = localStorage.getItem('darkMode')
+        if (typeof window === 'undefined') return false
+        const stored = loadJournalData().darkMode
         if (stored === 'dark') return true
         if (stored === 'light') return false
-
-        // fallback to system preference
         return window.matchMedia('(prefers-color-scheme: dark)').matches
     })
 
-    // 2. Sync darkMode state with localStorage and body class
     useEffect(() => {
-        localStorage.setItem('darkMode', darkMode ? 'dark' : 'light')
+        saveJournalData({ darkMode: darkMode ? 'dark' : 'light' })
         document.body.classList.toggle('dark', darkMode)
     }, [darkMode])
 
