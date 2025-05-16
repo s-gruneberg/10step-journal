@@ -8,7 +8,7 @@ interface JournalData {
 export const defaultQuestions = [
     "Was I resentful, angry, or dishonest?",
     "Was I kind and loving towards all?",
-    "Did I promptly admit when I was wrong today?",
+    "Did I promptly admit when I was wrong?",
     "How did I help others today?",
 ]
 
