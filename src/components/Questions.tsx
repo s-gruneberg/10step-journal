@@ -2,11 +2,10 @@ import React from 'react'
 import { useDarkMode } from '../context/DarkModeContext'
 
 const questions = [
-    "What did I do wrong today?",
-    "What did I do right today?",
-    "What could I have done better?",
+    "Was I resentful, angry, or dishonest?",
+    "Was I kind and loving towards all?",
+    "Did I promptly admit when I was wrong today?",
     "How did I help others today?",
-    "What am I grateful for today?",
 ]
 
 export default function Questions() {

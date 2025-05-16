@@ -1,14 +1,20 @@
+// main.tsx or App.tsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
-import Questions from './components/Questions'
+import Home from './pages/Home.tsx'
+import About from './pages/About'
 
 function App() {
   return (
-    <div className="container my-5">
+    <Router>
       <Header />
-
-
-      <Questions />
-    </div>
+      <div className="container my-5">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 

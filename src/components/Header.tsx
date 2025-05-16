@@ -1,52 +1,66 @@
 import { useDarkMode } from '../context/DarkModeContext'
-import { useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import logo from '../assets/10steplogo.png'
+import { useState } from 'react'
 
 const Header = () => {
     const { darkMode, toggleDarkMode } = useDarkMode()
-    const [menuOpen, setMenuOpen] = useState(false)
+    const [expanded, setExpanded] = useState(false)
 
     return (
-        <header className="border-bottom pt-1 pb-4 pe-2 ps-2">
-            {/* Top row: logo + title */}
-            <div className="d-flex align-items-center mb-3">
-                <img src={logo} alt="10th Step Logo" height={60} className="me-3" />
-                <h1 className="m-0" style={{ fontSize: '1.8rem' }}>
-                    10th Step Journal
-                </h1>
-            </div>
+        <nav
+            className={`navbar navbar-expand-md ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} border-bottom px-2 py-2`}
+        >
+            <div className="container-fluid">
+                {/* Logo and title */}
+                <Link to="/" className="navbar-brand d-flex align-items-center" onClick={() => setExpanded(false)}>
+                    <img src={logo} alt="Logo" height={50} className="me-2" />
+                    <span style={{ fontSize: '1.8rem' }}>10th Step Journal</span>
+                </Link>
 
-            {/* Bottom row: toggle left, hamburger right */}
-            <div className="d-flex justify-content-between align-items-center">
-                {/* Dark mode toggle button (left) */}
+                {/* Dark mode toggle */}
                 <button
-                    className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
                     onClick={toggleDarkMode}
-                    aria-label="Toggle dark mode"
-                    style={{ fontSize: '.9rem', width: 'fit-content' }}
+                    className="btn btn-outline-secondary btn-sm me-5 d-md-none"
                 >
                     {darkMode ? 'Light' : 'Dark'}
                 </button>
 
-                {/* Hamburger menu button (right) */}
+                {/* Hamburger button */}
                 <button
-                    className="btn btn-outline-secondary btn-sm d-md-none"
-                    aria-label="Toggle menu"
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="navbar-toggler"
+                    type="button"
+                    onClick={() => setExpanded(!expanded)}
                 >
-                    ☰
+                    <span className="navbar-toggler-icon"></span>
                 </button>
-            </div>
 
-            {/* Mobile menu links */}
-            {menuOpen && (
-                <nav className="mt-3 d-md-none">
-                    <a href="/about" className="btn btn-link p-0">
-                        About
-                    </a>
-                </nav>
-            )}
-        </header>
+                {/* Collapsible nav menu */}
+                <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`}>
+                    <ul className="navbar-nav ms-auto">
+                        <li className="nav-item">
+                            <NavLink to="/" className="nav-link" onClick={() => setExpanded(false)}>
+                                Home
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/about" className="nav-link" onClick={() => setExpanded(false)}>
+                                About
+                            </NavLink>
+                        </li>
+                        {/* Optional: show dark mode toggle on desktop */}
+                        <li className="nav-item d-none d-md-block">
+                            <button
+                                onClick={toggleDarkMode}
+                                className="btn btn-outline-secondary btn-sm ms-2"
+                            >
+                                {darkMode ? 'Light' : 'Dark'}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     )
 }
 
