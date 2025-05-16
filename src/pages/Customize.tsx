@@ -42,7 +42,7 @@ export default function CustomizeQuestions() {
             <hr className="mb-4 mt-1" />
 
             <div className="mb-4">
-                <label htmlFor="newQuestion" className="form-label">Add New Question</label>
+                <label htmlFor="newQuestion" className="form-label"><strong>Add New Question</strong></label>
                 <div className="d-flex">
                     <input
                         id="newQuestion"
@@ -52,7 +52,7 @@ export default function CustomizeQuestions() {
                         onChange={(e) => setNewQuestion(e.target.value)}
                         placeholder="Enter a new question"
                     />
-                    <button className="btn btn-primary" onClick={handleAddQuestion}>
+                    <button type="button" class="btn btn-primary btn-success" onClick={handleAddQuestion}>
                         Add
                     </button>
                 </div>
@@ -62,17 +62,19 @@ export default function CustomizeQuestions() {
                 {questions.map((q, i) => (
                     <li
                         key={i}
-                        className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                        className={`list-group-item d-flex justify-content-between align-items-start ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
                     >
-                        {q}
+                        <div className="flex-grow-1 me-2 text-break">
+                            {q}
+                        </div>
                         <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveQuestion(q)}>
-                            Remove
+                            X
                         </button>
                     </li>
                 ))}
             </ul>
 
-            <button className="btn btn-warning" onClick={handleRestoreDefaults}>
+            <button className="btn btn-outline-warning" onClick={handleRestoreDefaults}>
                 Restore Default Questions
             </button>
         </div>
