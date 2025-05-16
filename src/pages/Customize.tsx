@@ -74,8 +74,8 @@ export default function CustomizeQuestions() {
                 ))}
             </ul>
 
-            <button className="btn btn-outline-warning" onClick={handleRestoreDefaults}>
-                Restore Default Questions
+            <button className="btn btn-warning" onClick={handleRestoreDefaults}>
+                Restore Defaults
             </button>
         </div>
     )

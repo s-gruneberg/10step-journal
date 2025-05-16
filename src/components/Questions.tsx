@@ -13,7 +13,7 @@ export default function Questions() {
         <>
             {questions.map((q, i) => (
                 <div key={i} className="mb-4">
-                    <label className="form-label fw-bold">{q}</label>
+                    <label className="form-label fw-bold text-wrap d-block text-break">{q}</label>
                     <textarea
                         className={`form-control themed-textarea ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-light'}`}
                         rows={3}
