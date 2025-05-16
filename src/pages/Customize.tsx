@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useDarkMode } from '../context/DarkModeContext'
 import {
     getQuestions,
-    setQuestions,
     restoreDefaultQuestions,
     addQuestion,
     removeQuestion
@@ -52,7 +51,7 @@ export default function CustomizeQuestions() {
                         onChange={(e) => setNewQuestion(e.target.value)}
                         placeholder="Enter a new question"
                     />
-                    <button type="button" class="btn btn-primary btn-success" onClick={handleAddQuestion}>
+                    <button type="button" className="btn btn-primary btn-success" onClick={handleAddQuestion}>
                         Add
                     </button>
                 </div>
