@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Home from './pages/Home.tsx'
 import About from './pages/About.tsx'
+import Settings from './pages/Settings.tsx'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
     </Router>
