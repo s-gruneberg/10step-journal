@@ -1,16 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDarkMode } from '../context/DarkModeContext'
-
-const questions = [
-    "Was I resentful, angry, or dishonest?",
-    "Was I kind and loving towards all?",
-    "Did I promptly admit when I was wrong today?",
-    "How did I help others today?",
-]
+import { getQuestions } from '../localStorageUtils.ts'
 
 export default function Questions() {
     const { darkMode } = useDarkMode()
+    const [questions, setQuestions] = useState<string[]>([])
 
+    useEffect(() => {
+        setQuestions(getQuestions())
+    }, [])
     return (
         <>
             {questions.map((q, i) => (

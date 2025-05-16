@@ -6,10 +6,9 @@ const Settings = () => {
 
     return (
         <div className="container mt-4">
-            <h1 className="text-3xl font-bold mb-1">Settings</h1>
-            <hr className="w-full h-0.5 bg-gray-300 rounded-sm mb-6" />
-
-            <div className="mt-6">
+            <h1 className="mb-2">Settings</h1>
+            <hr className="mb-5 mt-0" />
+            <div className="mt-4">
                 <button onClick={toggleDarkMode} className={toggleBtnClass}>
                     {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                 </button>
