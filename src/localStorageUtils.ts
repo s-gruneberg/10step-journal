@@ -58,7 +58,7 @@ export function removeQuestion(question: string) {
     setQuestions(current.filter(q => q !== question))
 }
 
-export function resetQuestionsToDefault() {
+export function restoreDefaultQuestions() {
     setQuestions(defaultQuestions)
 }
 

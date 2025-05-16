@@ -49,6 +49,11 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li className="nav-item">
+                            <NavLink to="/customize" className="nav-link" onClick={() => setExpanded(false)}>
+                                Customize
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
                             <NavLink to="/about" className="nav-link" onClick={() => setExpanded(false)}>
                                 About
                             </NavLink>

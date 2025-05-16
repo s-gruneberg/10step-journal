@@ -4,6 +4,7 @@ import Header from './components/Header'
 import Home from './pages/Home.tsx'
 import About from './pages/About.tsx'
 import Settings from './pages/Settings.tsx'
+import Customize from './pages/Customize.tsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/customize" element={<Customize />} />
         </Routes>
       </div>
     </Router>
