@@ -1,0 +1,141 @@
+# === GENERAL ===
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# TypeScript build info
+*.tsbuildinfo
+
+# === NODE / FRONTEND (Vite, React, etc.) ===
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Vite cache
+.vite/
+
+# npm cache
+.npm/
+
+# ESLint
+.eslintcache
+
+# === PYTHON / DJANGO BACKEND ===
+
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django/migrations (ignore generated migration files but keep __init__.py)
+**/migrations/
+!**/migrations/__init__.py
+
+# Django cache and database
+*.sqlite3
+*.sqlite3-journal
+*.log
+*.pot
+*.pyc
+
+# Virtualenvs
+venv/
+env/
+ENV/
+backend/venv/
+backend/env/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Testing
+.tox/
+.junit.xml
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# Pylint
+pylint-report.txt
+pylint-global.txt
+
+# Build
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# Pytest
+.cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Sphinx
+docs/_build/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Staticfiles
+staticfiles/
+static/
+media/
