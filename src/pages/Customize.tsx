@@ -35,6 +35,9 @@ export default function CustomizeQuestions() {
         setLocalQuestions(getQuestions())
     }
 
+    const addButtonClass = `btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`
+    const restoreButtonClass = `btn ${darkMode ? 'btn-outline-warning' : 'btn-warning'}`
+    const deleteButtonClass = `btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'}`
     return (
         <div>
             <h1 className="mb-2">Customize Questions</h1>
@@ -51,7 +54,7 @@ export default function CustomizeQuestions() {
                         onChange={(e) => setNewQuestion(e.target.value)}
                         placeholder="Enter a new question"
                     />
-                    <button type="button" className="btn btn-primary btn-success" onClick={handleAddQuestion}>
+                    <button type="button" className={addButtonClass} onClick={handleAddQuestion}>
                         Add
                     </button>
                 </div>
@@ -66,16 +69,16 @@ export default function CustomizeQuestions() {
                         <div className="flex-grow-1 me-2 text-break">
                             {q}
                         </div>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveQuestion(q)}>
+                        <button className={deleteButtonClass} onClick={() => handleRemoveQuestion(q)}>
                             X
                         </button>
                     </li>
                 ))}
             </ul>
 
-            <button className="btn btn-warning" onClick={handleRestoreDefaults}>
+            <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
                 Restore Defaults
             </button>
-        </div>
+        </div >
     )
 }

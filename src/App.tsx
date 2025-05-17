@@ -1,10 +1,11 @@
 // main.tsx or App.tsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
-import Home from './pages/Home.tsx'
+import Inventory from './pages/Inventory.tsx'
 import About from './pages/About.tsx'
 import Settings from './pages/Settings.tsx'
 import Customize from './pages/Customize.tsx'
+import Home from './pages/Home.tsx'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <div className="container my-5">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/about" element={<About />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/customize" element={<Customize />} />

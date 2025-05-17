@@ -49,6 +49,12 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li className="nav-item">
+                            <NavLink to="/Inventory" className="nav-link" onClick={() => setExpanded(false)}>
+                                Inventory
+                            </NavLink>
+                        </li>
+
+                        <li className="nav-item">
                             <NavLink to="/customize" className="nav-link" onClick={() => setExpanded(false)}>
                                 Customize
                             </NavLink>
@@ -62,6 +68,19 @@ const Header = () => {
                             <NavLink to="/settings" className="nav-link" onClick={() => setExpanded(false)}>
                                 Settings
                             </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={toggleBtnClass}
+                                // on click toggle dark mod ean dclose the menu
+                                onClick={() => {
+                                    toggleDarkMode()
+                                    setExpanded(false)
+                                }
+                                }
+                            >
+                                {darkMode ? 'Light Mode' : 'Dark Mode'}
+                            </button>
                         </li>
                     </ul>
                 </div>
