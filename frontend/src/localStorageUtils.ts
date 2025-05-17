@@ -1,4 +1,5 @@
 const STORAGE_KEY = '10StepJournal'
+const SESSION_STORAGE_KEY = '10StepJournal_Answers'
 
 interface JournalData {
     darkMode?: 'dark' | 'light'
@@ -60,5 +61,21 @@ export function removeQuestion(question: string) {
 
 export function restoreDefaultQuestions() {
     setQuestions(defaultQuestions)
+}
+
+/* utils for answer manipulation */
+export function saveAnswers(answers: string[]) {
+    if (typeof window === 'undefined') return
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(answers))
+}
+
+export function loadAnswers(): string[] {
+    if (typeof window === 'undefined') return []
+    try {
+        const raw = sessionStorage.getItem(SESSION_STORAGE_KEY)
+        return raw ? JSON.parse(raw) : []
+    } catch {
+        return []
+    }
 }
 

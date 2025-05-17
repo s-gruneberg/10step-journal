@@ -1,19 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Questions from '../components/Questions'
-import { getQuestions } from '../localStorageUtils.ts'
+import { getQuestions, saveAnswers, loadAnswers } from '../localStorageUtils.ts'
 import { downloadAsPDF, downloadAsWord, downloadAsText } from '../downloadUtils.ts'
 import { useDarkMode } from '../context/DarkModeContext.tsx'
 
 export default function Inventory() {
     const questions = getQuestions()
-    const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(''))
+    const [answers, setAnswers] = useState<string[]>(() => {
+        const savedAnswers = loadAnswers()
+        // Ensure we have an answer slot for each question
+        return savedAnswers.length === questions.length
+            ? savedAnswers
+            : Array(questions.length).fill('')
+    })
     const { darkMode } = useDarkMode()
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
+
     const handleAnswerChange = (index: number, value: string) => {
         const newAnswers = [...answers]
         newAnswers[index] = value
         setAnswers(newAnswers)
+        saveAnswers(newAnswers)
     }
+
+    // Update answers array if questions length changes
+    useEffect(() => {
+        if (answers.length !== questions.length) {
+            const newAnswers = Array(questions.length).fill('')
+            // Copy over any existing answers
+            answers.forEach((answer, index) => {
+                if (index < questions.length) {
+                    newAnswers[index] = answer
+                }
+            })
+            setAnswers(newAnswers)
+            saveAnswers(newAnswers)
+        }
+    }, [questions.length])
 
     const handleDownload = (downloadFn: (title: string, qaPairs: { q: string; a: string }[]) => void) => {
         const qaPairs = questions.map((q, i) => ({ q, a: answers[i] || '' }));

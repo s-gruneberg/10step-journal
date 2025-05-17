@@ -8,7 +8,7 @@ const Home = () => {
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-2">Welcome to the 10th Step Journal</h1>
+      <h1 className="mb-2">Welcome to 10th Step Journal</h1>
       <hr className="mb-5 mt-0" />
 
       <p className="lead">

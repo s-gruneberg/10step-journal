@@ -79,7 +79,7 @@ const Header = () => {
                                 }
                                 }
                             >
-                                {darkMode ? 'Light Mode' : 'Dark Mode'}
+                                {darkMode ? 'Light' : 'Dark'}
                             </button>
                         </li>
                     </ul>
