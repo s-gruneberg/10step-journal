@@ -6,9 +6,10 @@ interface QuestionsProps {
     questions: string[];
     answers: string[];
     onAnswerChange: (index: number, value: string) => void;
+    onClear: () => void;
 }
 
-const Questions = ({ questions, answers, onAnswerChange }: QuestionsProps) => {
+const Questions = ({ questions, answers, onAnswerChange, onClear }: QuestionsProps) => {
     const { darkMode } = useDarkMode()
     const [checkmarks, setCheckmarks] = useState<string[]>([])
     const [checkmarkStates, setCheckmarkStates] = useState<Record<string, boolean>>({})
@@ -27,16 +28,17 @@ const Questions = ({ questions, answers, onAnswerChange }: QuestionsProps) => {
     }
 
     const handleClearAll = () => {
+        // Clear all storage and state
         clearAnswers()
         setCheckmarkStates({})
-        // Clear all answers in parent component
-        questions.forEach((_, index) => onAnswerChange(index, ''))
+        onClear()
     }
 
     return (
         <>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <div className="d-flex gap-4">
+            <h2 className="h4 mb-3">Daily Activities</h2>
+            <div className="d-flex justify-content-between align-items-start mb-4">
+                <div className="d-flex flex-wrap gap-4" style={{ flex: '1 1 auto' }}>
                     {checkmarks.map((checkmark) => (
                         <div key={checkmark} className="form-check">
                             <input
@@ -53,13 +55,14 @@ const Questions = ({ questions, answers, onAnswerChange }: QuestionsProps) => {
                     ))}
                 </div>
                 <button
-                    className={`btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'}`}
+                    className={`btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'} ms-3`}
                     onClick={handleClearAll}
                 >
                     Clear All
                 </button>
             </div>
 
+            <h2 className="h4 mb-3">Inventory Questions</h2>
             {questions.map((q, i) => (
                 <div key={i} className="mb-4">
                     <label className="form-label fw-bold text-wrap d-block text-break">{q}</label>

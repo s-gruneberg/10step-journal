@@ -8,99 +8,96 @@ import {
     getCheckmarks,
     addCheckmark,
     removeCheckmark,
-    restoreDefaultCheckmarks
+    restoreDefaultCheckmarks,
+    setQuestions,
+    setCheckmarks
 } from '../localStorageUtils.ts'
+import { Link } from 'react-router-dom'
+
+const MAX_QUESTIONS = 12
+const MAX_CHECKMARKS = 6
 
 export default function CustomizeQuestions() {
     const { darkMode } = useDarkMode()
-    const [questions, setLocalQuestions] = useState<string[]>([])
-    const [checkmarks, setLocalCheckmarks] = useState<string[]>([])
+    // Temporary state that won't be saved until user clicks Save
+    const [tempQuestions, setTempQuestions] = useState<string[]>([])
+    const [tempCheckmarks, setTempCheckmarks] = useState<string[]>([])
     const [newQuestion, setNewQuestion] = useState<string>('')
     const [newCheckmark, setNewCheckmark] = useState<string>('')
+    const [hasChanges, setHasChanges] = useState(false)
 
     useEffect(() => {
-        setLocalQuestions(getQuestions())
-        setLocalCheckmarks(getCheckmarks())
+        setTempQuestions(getQuestions())
+        setTempCheckmarks(getCheckmarks())
     }, [])
 
     const handleAddQuestion = () => {
         const trimmed = newQuestion.trim()
-        if (!trimmed || questions.includes(trimmed)) return
+        if (!trimmed || tempQuestions.includes(trimmed)) return
+        if (tempQuestions.length >= MAX_QUESTIONS) {
+            alert(`Maximum ${MAX_QUESTIONS} questions allowed`)
+            return
+        }
 
-        addQuestion(trimmed)
-        setLocalQuestions(getQuestions())
+        setTempQuestions([...tempQuestions, trimmed])
         setNewQuestion('')
+        setHasChanges(true)
     }
 
     const handleAddCheckmark = () => {
         const trimmed = newCheckmark.trim()
-        if (!trimmed || checkmarks.includes(trimmed)) return
+        if (!trimmed || tempCheckmarks.includes(trimmed)) return
+        if (tempCheckmarks.length >= MAX_CHECKMARKS) {
+            alert(`Maximum ${MAX_CHECKMARKS} daily activities allowed`)
+            return
+        }
 
-        addCheckmark(trimmed)
-        setLocalCheckmarks(getCheckmarks())
+        setTempCheckmarks([...tempCheckmarks, trimmed])
         setNewCheckmark('')
+        setHasChanges(true)
     }
 
     const handleRemoveQuestion = (q: string) => {
-        removeQuestion(q)
-        setLocalQuestions(getQuestions())
+        setTempQuestions(tempQuestions.filter(question => question !== q))
+        setHasChanges(true)
     }
 
     const handleRemoveCheckmark = (c: string) => {
-        removeCheckmark(c)
-        setLocalCheckmarks(getCheckmarks())
+        setTempCheckmarks(tempCheckmarks.filter(checkmark => checkmark !== c))
+        setHasChanges(true)
     }
 
     const handleRestoreDefaults = () => {
         restoreDefaultQuestions()
         restoreDefaultCheckmarks()
-        setLocalQuestions(getQuestions())
-        setLocalCheckmarks(getCheckmarks())
+        setTempQuestions(getQuestions())
+        setTempCheckmarks(getCheckmarks())
+        setHasChanges(true)
+    }
+
+    const handleSave = () => {
+        // TODO: If user is logged in, save to backend
+        setQuestions(tempQuestions)
+        setCheckmarks(tempCheckmarks)
+        setHasChanges(false)
     }
 
     const addButtonClass = `btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`
     const restoreButtonClass = `btn ${darkMode ? 'btn-outline-warning' : 'btn-warning'}`
     const deleteButtonClass = `btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'}`
+    const saveButtonClass = `btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`
 
     return (
         <div>
-            <h1 className="mb-2">Customize Questions</h1>
+            <div className="d-flex justify-content-between align-items-center">
+                <h1 className="mb-2">Customize</h1>
+                <Link to="/inventory" className={`btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`}>
+                    Back
+                </Link>
+            </div>
             <hr className="mb-4 mt-1" />
 
-            <div className="mb-4">
-                <label htmlFor="newQuestion" className="form-label"><strong>Add New Question</strong></label>
-                <div className="d-flex">
-                    <input
-                        id="newQuestion"
-                        type="text"
-                        className={`form-control me-2 ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-light'}`}
-                        value={newQuestion}
-                        onChange={(e) => setNewQuestion(e.target.value)}
-                        placeholder="Enter a new question"
-                    />
-                    <button type="button" className={addButtonClass} onClick={handleAddQuestion}>
-                        Add
-                    </button>
-                </div>
-            </div>
-
-            <ul className="list-group mb-4">
-                {questions.map((q, i) => (
-                    <li
-                        key={i}
-                        className={`list-group-item d-flex justify-content-between align-items-start ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
-                    >
-                        <div className="flex-grow-1 me-2 text-break">
-                            {q}
-                        </div>
-                        <button className={deleteButtonClass} onClick={() => handleRemoveQuestion(q)}>
-                            X
-                        </button>
-                    </li>
-                ))}
-            </ul>
-
-            <h2 className="h4 mb-3">Daily Activities</h2>
+            <h2 className="h4 mb-3">Daily Activities <small className="text-muted">({tempCheckmarks.length}/{MAX_CHECKMARKS})</small></h2>
             <div className="mb-4">
                 <label htmlFor="newCheckmark" className="form-label"><strong>Add New Activity</strong></label>
                 <div className="d-flex">
@@ -111,15 +108,21 @@ export default function CustomizeQuestions() {
                         value={newCheckmark}
                         onChange={(e) => setNewCheckmark(e.target.value)}
                         placeholder="Enter a new daily activity"
+                        disabled={tempCheckmarks.length >= MAX_CHECKMARKS}
                     />
-                    <button type="button" className={addButtonClass} onClick={handleAddCheckmark}>
+                    <button
+                        type="button"
+                        className={addButtonClass}
+                        onClick={handleAddCheckmark}
+                        disabled={tempCheckmarks.length >= MAX_CHECKMARKS}
+                    >
                         Add
                     </button>
                 </div>
             </div>
 
             <ul className="list-group mb-4">
-                {checkmarks.map((c, i) => (
+                {tempCheckmarks.map((c, i) => (
                     <li
                         key={i}
                         className={`list-group-item d-flex justify-content-between align-items-start ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
@@ -134,9 +137,59 @@ export default function CustomizeQuestions() {
                 ))}
             </ul>
 
-            <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
-                Restore Defaults
-            </button>
+            <h2 className="h4 mb-3">Inventory Questions <small className="text-muted">({tempQuestions.length}/{MAX_QUESTIONS})</small></h2>
+            <div className="mb-4">
+                <label htmlFor="newQuestion" className="form-label"><strong>Add New Question</strong></label>
+                <div className="d-flex">
+                    <input
+                        id="newQuestion"
+                        type="text"
+                        className={`form-control me-2 ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-light'}`}
+                        value={newQuestion}
+                        onChange={(e) => setNewQuestion(e.target.value)}
+                        placeholder="Enter a new question"
+                        disabled={tempQuestions.length >= MAX_QUESTIONS}
+                    />
+                    <button
+                        type="button"
+                        className={addButtonClass}
+                        onClick={handleAddQuestion}
+                        disabled={tempQuestions.length >= MAX_QUESTIONS}
+                    >
+                        Add
+                    </button>
+                </div>
+            </div>
+
+            <ul className="list-group mb-4">
+                {tempQuestions.map((q, i) => (
+                    <li
+                        key={i}
+                        className={`list-group-item d-flex justify-content-between align-items-start ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                    >
+                        <div className="flex-grow-1 me-2 text-break">
+                            {q}
+                        </div>
+                        <button className={deleteButtonClass} onClick={() => handleRemoveQuestion(q)}>
+                            X
+                        </button>
+                    </li>
+                ))}
+            </ul>
+
+            <div className="d-flex justify-content-between align-items-center">
+
+                <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
+                    Restore Defaults
+                </button>
+                <button
+                    className={saveButtonClass}
+                    onClick={handleSave}
+                    disabled={!hasChanges}
+                >
+                    Save
+                </button>
+            </div>
         </div>
     )
 }

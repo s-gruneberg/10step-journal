@@ -16,13 +16,18 @@ export default function Inventory() {
     })
     const { darkMode } = useDarkMode()
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
-    const customizeButtonClass = `btn ${darkMode ? 'btn-primary' : 'btn-outline-primary'} mb-4`
+    const customizeButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} mb-4`
 
     const handleAnswerChange = (index: number, value: string) => {
         const newAnswers = [...answers]
         newAnswers[index] = value
         setAnswers(newAnswers)
         saveAnswers(newAnswers)
+    }
+
+    const handleClear = () => {
+        const emptyAnswers = Array(questions.length).fill('')
+        setAnswers(emptyAnswers)
     }
 
     // Update answers array if questions length changes
@@ -55,21 +60,18 @@ export default function Inventory() {
             <div className="d-flex justify-content-between align-items-center">
                 <h1 className="mb-2">Inventory</h1>
                 <Link to="/customize" className={customizeButtonClass}>
-                    Customize Questions
+                    Customize
                 </Link>
             </div>
             <hr className="mb-4 mt-0" />
-
-
 
             <Questions
                 questions={questions}
                 answers={answers}
                 onAnswerChange={handleAnswerChange}
+                onClear={handleClear}
             />
             <div className="d-flex justify-content-end">
-
-
                 <div className="dropdown">
                     <button className={buttonClass} type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Download
