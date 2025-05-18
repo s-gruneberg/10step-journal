@@ -28,6 +28,7 @@ class ApiService {
         const token = localStorage.getItem('accessToken');
         return {
             'Content-Type': 'application/json',
+            'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         };
     }

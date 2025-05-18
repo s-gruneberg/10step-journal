@@ -96,8 +96,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = () => {
+        // Clear auth tokens
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+
+        // Clear app-specific data using namespaced keys
+        const APP_NAMESPACE = '10StepJournal';
+        const keys = ['Checkmarks', 'Questions', 'CheckmarkStates', 'Answers'];
+        keys.forEach(key => {
+            localStorage.removeItem(`${APP_NAMESPACE}.${key}`);
+        });
+
+        // Clear any remaining session storage
+        sessionStorage.clear();
+
         setUser(null);
         setIsAuthenticated(false);
     };

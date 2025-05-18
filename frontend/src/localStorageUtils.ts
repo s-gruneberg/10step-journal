@@ -1,7 +1,4 @@
-const STORAGE_KEY = '10StepJournal'
-const SESSION_STORAGE_KEY = '10StepJournal_Answers'
-const CHECKMARKS_KEY = '10StepJournal_Checkmarks'
-const ANSWERS_EXPIRY_KEY = '10StepJournal_AnswersExpiry'
+const APP_NAMESPACE = '10StepJournal';
 
 interface JournalData {
     darkMode?: 'dark' | 'light'
@@ -21,11 +18,13 @@ export const defaultCheckmarks = [
     "Meditate"
 ]
 
+const getNamespacedKey = (key: string) => `${APP_NAMESPACE}.${key}`;
+
 export function loadJournalData(): JournalData {
     if (typeof window === 'undefined') return {}
 
     try {
-        const raw = localStorage.getItem(STORAGE_KEY)
+        const raw = localStorage.getItem(getNamespacedKey('JournalData'));
         return raw ? JSON.parse(raw) : {}
     } catch {
         return {}
@@ -35,7 +34,7 @@ export function loadJournalData(): JournalData {
 export function saveJournalData(update: Partial<JournalData>) {
     const current = loadJournalData()
     const next = { ...current, ...update }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    localStorage.setItem(getNamespacedKey('JournalData'), JSON.stringify(next))
 }
 
 /* utils for question manipulation */
@@ -56,12 +55,17 @@ export function ensureQuestionsInitialized() {
 }
 
 export function getQuestions(): string[] {
-    const data = loadJournalData()
-    return Array.isArray(data.questions) ? data.questions : defaultQuestions
+    const stored = localStorage.getItem(getNamespacedKey('Questions'));
+    if (!stored) return defaultQuestions;
+    try {
+        return JSON.parse(stored);
+    } catch {
+        return defaultQuestions;
+    }
 }
 
 export function setQuestions(newQuestions: string[]) {
-    saveJournalData({ questions: newQuestions })
+    localStorage.setItem(getNamespacedKey('Questions'), JSON.stringify(newQuestions));
 }
 
 export function addQuestion(question: string) {
@@ -82,12 +86,17 @@ export function restoreDefaultQuestions() {
 
 /* utils for checkmark manipulation */
 export function getCheckmarks(): string[] {
-    const data = loadJournalData()
-    return Array.isArray(data.checkmarks) ? data.checkmarks : defaultCheckmarks
+    const stored = localStorage.getItem(getNamespacedKey('Checkmarks'));
+    if (!stored) return defaultCheckmarks;
+    try {
+        return JSON.parse(stored);
+    } catch {
+        return defaultCheckmarks;
+    }
 }
 
 export function setCheckmarks(newCheckmarks: string[]) {
-    saveJournalData({ checkmarks: newCheckmarks })
+    localStorage.setItem(getNamespacedKey('Checkmarks'), JSON.stringify(newCheckmarks));
 }
 
 export function addCheckmark(checkmark: string) {
@@ -99,7 +108,8 @@ export function addCheckmark(checkmark: string) {
 
 export function removeCheckmark(checkmark: string) {
     const current = getCheckmarks()
-    setCheckmarks(current.filter(c => c !== checkmark))
+    const filtered = current.filter(c => c !== checkmark)
+    setCheckmarks(filtered)
 }
 
 export function restoreDefaultCheckmarks() {
@@ -107,45 +117,36 @@ export function restoreDefaultCheckmarks() {
 }
 
 export function getCheckmarkStates(): Record<string, boolean> {
+    const stored = localStorage.getItem(getNamespacedKey('CheckmarkStates'));
+    if (!stored) return {};
     try {
-        const raw = sessionStorage.getItem(CHECKMARKS_KEY)
-        return raw ? JSON.parse(raw) : {}
+        return JSON.parse(stored);
     } catch {
-        return {}
+        return {};
     }
 }
 
 export function saveCheckmarkStates(states: Record<string, boolean>) {
-    sessionStorage.setItem(CHECKMARKS_KEY, JSON.stringify(states))
+    localStorage.setItem(getNamespacedKey('CheckmarkStates'), JSON.stringify(states));
 }
 
 /* utils for answer manipulation with expiry */
-export function saveAnswers(answers: string[]) {
-    if (typeof window === 'undefined') return
-    const expiry = new Date().getTime() + (60 * 60 * 1000) // 1 hour from now
-    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(answers))
-    sessionStorage.setItem(ANSWERS_EXPIRY_KEY, expiry.toString())
-}
-
-export function loadAnswers(): string[] {
-    if (typeof window === 'undefined') return []
+export function getAnswers(): Record<number, string> {
+    const stored = localStorage.getItem(getNamespacedKey('Answers'));
+    if (!stored) return {};
     try {
-        const expiry = sessionStorage.getItem(ANSWERS_EXPIRY_KEY)
-        if (expiry && new Date().getTime() > parseInt(expiry)) {
-            sessionStorage.removeItem(SESSION_STORAGE_KEY)
-            sessionStorage.removeItem(ANSWERS_EXPIRY_KEY)
-            return []
-        }
-        const raw = sessionStorage.getItem(SESSION_STORAGE_KEY)
-        return raw ? JSON.parse(raw) : []
+        return JSON.parse(stored);
     } catch {
-        return []
+        return {};
     }
 }
 
+export function saveAnswers(answers: Record<number, string>) {
+    localStorage.setItem(getNamespacedKey('Answers'), JSON.stringify(answers));
+}
+
 export function clearAnswers() {
-    sessionStorage.removeItem(SESSION_STORAGE_KEY)
-    sessionStorage.removeItem(ANSWERS_EXPIRY_KEY)
-    sessionStorage.removeItem(CHECKMARKS_KEY)
+    localStorage.removeItem(getNamespacedKey('Answers'));
+    localStorage.removeItem(getNamespacedKey('CheckmarkStates'));
 }
 

@@ -36,16 +36,15 @@ export default function CustomizeQuestions() {
             if (isAuthenticated) {
                 try {
                     const userQuestions = await apiService.getUserQuestions();
+                    // For authenticated users, only use the server data
                     setTempQuestions(userQuestions.questions);
                     setTempCheckmarks(userQuestions.checkmarks);
                 } catch (error) {
                     console.error('Failed to load user questions:', error);
-                    // Fall back to local storage
-                    setTempQuestions(getQuestions());
-                    setTempCheckmarks(getCheckmarks());
+                    setError('Failed to load your saved questions. Please try again later.');
                 }
             } else {
-                // For non-authenticated users, just load from local storage
+                // For non-authenticated users, load from local storage
                 setTempQuestions(getQuestions());
                 setTempCheckmarks(getCheckmarks());
             }
@@ -98,34 +97,29 @@ export default function CustomizeQuestions() {
     }
 
     const handleSave = async () => {
-        setIsSaving(true)
-        setError(null)
+        setIsSaving(true);
+        setError(null);
 
         try {
-            // Always save to local storage first
-            setQuestions(tempQuestions)
-            setCheckmarks(tempCheckmarks)
-
-            // Update individual storage functions for local state
-            tempQuestions.forEach(q => addQuestion(q))
-            tempCheckmarks.forEach(c => addCheckmark(c))
-
-            // If authenticated, also save to backend
             if (isAuthenticated) {
+                // For authenticated users, save only to backend
                 await apiService.saveUserQuestions({
                     questions: tempQuestions,
                     checkmarks: tempCheckmarks
                 });
+            } else {
+                // For non-authenticated users, save to local storage
+                setQuestions(tempQuestions);
+                setCheckmarks(tempCheckmarks);
             }
-
-            setHasChanges(false)
+            setHasChanges(false);
         } catch (err) {
-            console.error('Failed to save changes:', err)
-            setError('Failed to save changes to the server. Your changes are saved locally.')
+            console.error('Failed to save changes:', err);
+            setError('Failed to save changes. Please try again later.');
         } finally {
-            setIsSaving(false)
+            setIsSaving(false);
         }
-    }
+    };
 
     const addButtonClass = `btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`
     const restoreButtonClass = `btn ${darkMode ? 'btn-outline-warning' : 'btn-warning'}`
