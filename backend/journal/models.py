@@ -1,7 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-# Create your models here.
-from django.contrib.auth.models import User
+User = get_user_model()
 
 class Question(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='questions')
@@ -11,10 +11,54 @@ class Question(models.Model):
         return self.text
 
 
-class JournalEntry(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='entries')
-    date = models.DateField(auto_now_add=True)
-    content = models.TextField()
+class UserQuestions(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    questions = models.JSONField(default=list)  # List of questions
+    checkmarks = models.JSONField(default=list)  # List of checkmark activities
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.user.username} - {self.date}"
+    class Meta:
+        verbose_name = 'User Questions'
+        verbose_name_plural = 'User Questions'
+
+
+class JournalEntry(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    answers = models.JSONField()  # List of answers matching questions
+    checkmarks = models.JSONField()  # Dict of checkmark states
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user', 'date']
+        indexes = [
+            models.Index(fields=['user', 'date']),
+        ]
+        verbose_name = 'Journal Entry'
+        verbose_name_plural = 'Journal Entries'
+
+
+class Streak(models.Model):
+    STREAK_TYPES = [
+        ('journal', 'Journal'),
+        ('checkmark', 'Checkmark'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_type = models.CharField(max_length=50)  # 'journal' or checkmark name
+    streak_type = models.CharField(max_length=20, choices=STREAK_TYPES)
+    current_streak = models.IntegerField(default=0)
+    longest_streak = models.IntegerField(default=0)
+    last_entry_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user', 'activity_type']
+        indexes = [
+            models.Index(fields=['user', 'activity_type']),
+        ]
+        verbose_name = 'Streak'
+        verbose_name_plural = 'Streaks'

@@ -8,6 +8,7 @@ import Customize from './pages/Customize.tsx'
 import Home from './pages/Home.tsx'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Insights from './pages/Insights'
 import { AuthProvider } from './context/AuthContext'
 
 function AppContent() {
@@ -20,6 +21,7 @@ function AppContent() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Home />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/insights" element={<Insights />} />
           <Route path="/about" element={<About />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/customize" element={<Customize />} />

@@ -11,25 +11,47 @@ import {
     restoreDefaultCheckmarks,
     setQuestions,
     setCheckmarks
-} from '../localStorageUtils.ts'
+} from '../localStorageUtils'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { apiService } from '../services/api'
 
 const MAX_QUESTIONS = 12
 const MAX_CHECKMARKS = 6
 
 export default function CustomizeQuestions() {
     const { darkMode } = useDarkMode()
+    const { isAuthenticated } = useAuth()
     // Temporary state that won't be saved until user clicks Save
     const [tempQuestions, setTempQuestions] = useState<string[]>([])
     const [tempCheckmarks, setTempCheckmarks] = useState<string[]>([])
     const [newQuestion, setNewQuestion] = useState<string>('')
     const [newCheckmark, setNewCheckmark] = useState<string>('')
     const [hasChanges, setHasChanges] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        setTempQuestions(getQuestions())
-        setTempCheckmarks(getCheckmarks())
-    }, [])
+        const loadData = async () => {
+            if (isAuthenticated) {
+                try {
+                    const userQuestions = await apiService.getUserQuestions();
+                    setTempQuestions(userQuestions.questions);
+                    setTempCheckmarks(userQuestions.checkmarks);
+                } catch (error) {
+                    console.error('Failed to load user questions:', error);
+                    // Fall back to local storage
+                    setTempQuestions(getQuestions());
+                    setTempCheckmarks(getCheckmarks());
+                }
+            } else {
+                // For non-authenticated users, just load from local storage
+                setTempQuestions(getQuestions());
+                setTempCheckmarks(getCheckmarks());
+            }
+        };
+        loadData();
+    }, [isAuthenticated]);
 
     const handleAddQuestion = () => {
         const trimmed = newQuestion.trim()
@@ -75,11 +97,34 @@ export default function CustomizeQuestions() {
         setHasChanges(true)
     }
 
-    const handleSave = () => {
-        // TODO: If user is logged in, save to backend
-        setQuestions(tempQuestions)
-        setCheckmarks(tempCheckmarks)
-        setHasChanges(false)
+    const handleSave = async () => {
+        setIsSaving(true)
+        setError(null)
+
+        try {
+            // Always save to local storage first
+            setQuestions(tempQuestions)
+            setCheckmarks(tempCheckmarks)
+
+            // Update individual storage functions for local state
+            tempQuestions.forEach(q => addQuestion(q))
+            tempCheckmarks.forEach(c => addCheckmark(c))
+
+            // If authenticated, also save to backend
+            if (isAuthenticated) {
+                await apiService.saveUserQuestions({
+                    questions: tempQuestions,
+                    checkmarks: tempCheckmarks
+                });
+            }
+
+            setHasChanges(false)
+        } catch (err) {
+            console.error('Failed to save changes:', err)
+            setError('Failed to save changes to the server. Your changes are saved locally.')
+        } finally {
+            setIsSaving(false)
+        }
     }
 
     const addButtonClass = `btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`
@@ -94,8 +139,22 @@ export default function CustomizeQuestions() {
                 <Link to="/inventory" className={`btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`}>
                     Back
                 </Link>
+                <button
+                    className={saveButtonClass}
+                    onClick={handleSave}
+                    disabled={!hasChanges || isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Save'}
+                </button>
             </div>
             <hr className="mb-4 mt-1" />
+
+            {error && (
+                <div className="alert alert-warning alert-dismissible fade show" role="alert">
+                    {error}
+                    <button type="button" className="btn-close" onClick={() => setError(null)} aria-label="Close"></button>
+                </div>
+            )}
 
             <h2 className="h4 mb-3">Daily Activities <small className="text-muted">({tempCheckmarks.length}/{MAX_CHECKMARKS})</small></h2>
             <div className="mb-4">
@@ -177,19 +236,9 @@ export default function CustomizeQuestions() {
                 ))}
             </ul>
 
-            <div className="d-flex justify-content-between align-items-center">
-
-                <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
-                    Restore Defaults
-                </button>
-                <button
-                    className={saveButtonClass}
-                    onClick={handleSave}
-                    disabled={!hasChanges}
-                >
-                    Save
-                </button>
-            </div>
+            <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
+                Restore Defaults
+            </button>
         </div>
     )
 }

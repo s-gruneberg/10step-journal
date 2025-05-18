@@ -41,8 +41,17 @@ export function saveJournalData(update: Partial<JournalData>) {
 /* utils for question manipulation */
 export function ensureQuestionsInitialized() {
     const data = loadJournalData()
+    const update: JournalData = {}
+
     if (!Array.isArray(data.questions)) {
-        saveJournalData({ questions: defaultQuestions })
+        update.questions = defaultQuestions
+    }
+    if (!Array.isArray(data.checkmarks)) {
+        update.checkmarks = defaultCheckmarks
+    }
+
+    if (Object.keys(update).length > 0) {
+        saveJournalData(update)
     }
 }
 

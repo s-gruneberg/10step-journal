@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Question, JournalEntry
+from .models import Question, JournalEntry, UserQuestions, Streak
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
@@ -10,10 +10,23 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = ['id', 'text', 'user']
 
+class UserQuestionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserQuestions
+        fields = ['questions', 'checkmarks', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+
 class JournalEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = JournalEntry
-        fields = ['id', 'user', 'entry_text', 'created_at']
+        fields = ['date', 'answers', 'checkmarks', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+
+class StreakSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Streak
+        fields = ['activity_type', 'streak_type', 'current_streak', 'longest_streak', 'last_entry_date']
+        read_only_fields = ['current_streak', 'longest_streak', 'last_entry_date']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

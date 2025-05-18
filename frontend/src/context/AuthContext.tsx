@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { defaultQuestions, defaultCheckmarks } from '../localStorageUtils';
+import { apiService } from '../services/api';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -11,7 +13,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = import.meta.env.PROD ? '/api' : 'http://127.0.0.1:8000/api';
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -78,7 +80,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw new Error(Object.values(error).flat().join(', '));
         }
 
+        // First login to get the token
         await login(username, password);
+
+        // Initialize user questions and checkmarks with defaults
+        try {
+            await apiService.saveUserQuestions({
+                questions: defaultQuestions,
+                checkmarks: defaultCheckmarks
+            });
+        } catch (error) {
+            console.error('Failed to initialize user questions:', error);
+            // Don't throw error here as registration was successful
+        }
     };
 
     const logout = () => {

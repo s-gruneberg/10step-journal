@@ -61,6 +61,13 @@ const Header = () => {
                                 Inventory
                             </NavLink>
                         </li>
+                        {isAuthenticated && (
+                            <li className="nav-item">
+                                <NavLink to="/insights" className="nav-link" onClick={() => setExpanded(false)}>
+                                    Insights
+                                </NavLink>
+                            </li>
+                        )}
                         <li className="nav-item">
                             <NavLink to="/about" className="nav-link" onClick={() => setExpanded(false)}>
                                 About

@@ -20,6 +20,7 @@ from journal.views import home_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('journal.urls')),
-    path('', home_view, name='home')
+    path('', home_view, name='home'),
+    # Include all journal URLs at the root level since they're already properly namespaced
+    path('', include('journal.urls')),
 ]
