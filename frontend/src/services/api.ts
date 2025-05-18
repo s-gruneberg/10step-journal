@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config';
+import { AuthService } from './auth';
 
 interface UserQuestions {
     questions: string[];
@@ -8,11 +9,9 @@ interface UserQuestions {
 }
 
 interface Streak {
-    activity_type: string;
-    streak_type: string;
-    current_streak: number;
-    longest_streak: number;
-    last_entry_date: string;
+    date: string;
+    checkmarks: Record<string, boolean>;
+    answers: Record<number, string>;
 }
 
 class ApiService {
@@ -20,14 +19,24 @@ class ApiService {
     private headers: HeadersInit;
 
     constructor() {
-        this.baseUrl = 'http://localhost:8000';
+        this.baseUrl = API_BASE_URL;
         this.headers = {
             'Content-Type': 'application/json',
         };
     }
 
-    private getAuthHeaders(): HeadersInit {
-        const token = localStorage.getItem('accessToken');
+    private async getAuthHeaders(): Promise<HeadersInit> {
+        let token = localStorage.getItem('accessToken');
+
+        if (token && AuthService.isTokenExpired(token)) {
+            // Token is expired, try to refresh
+            token = await AuthService.refreshToken();
+            if (!token) {
+                // If refresh failed, throw error to trigger re-login
+                throw new Error('Authentication expired. Please log in again.');
+            }
+        }
+
         return {
             ...this.headers,
             'Authorization': `Bearer ${token}`,
@@ -35,6 +44,29 @@ class ApiService {
     }
 
     private async handleResponse<T>(response: Response): Promise<T> {
+        if (response.status === 401) {
+            // Try token refresh on 401
+            const newToken = await AuthService.refreshToken();
+            if (!newToken) {
+                throw new Error('Authentication expired. Please log in again.');
+            }
+
+            // Retry the original request with new token
+            const retryResponse = await fetch(response.url, {
+                ...response,
+                headers: {
+                    ...this.headers,
+                    'Authorization': `Bearer ${newToken}`,
+                }
+            });
+
+            if (!retryResponse.ok) {
+                const error = await retryResponse.json();
+                throw new Error(error.detail || 'API request failed');
+            }
+            return retryResponse.json();
+        }
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail || 'API request failed');
@@ -44,16 +76,16 @@ class ApiService {
 
     // User Questions API
     async getUserQuestions(): Promise<UserQuestions> {
-        const response = await fetch(`${API_BASE_URL}/api/user-questions/`, {
-            headers: this.getAuthHeaders()
+        const response = await fetch(`${this.baseUrl}/api/user-questions/`, {
+            headers: await this.getAuthHeaders()
         });
         return this.handleResponse<UserQuestions>(response);
     }
 
     async saveUserQuestions(data: Partial<UserQuestions>): Promise<UserQuestions> {
-        const response = await fetch(`${API_BASE_URL}/api/user-questions/`, {
+        const response = await fetch(`${this.baseUrl}/api/user-questions/`, {
             method: 'POST',
-            headers: this.getAuthHeaders(),
+            headers: await this.getAuthHeaders(),
             body: JSON.stringify(data)
         });
         return this.handleResponse<UserQuestions>(response);
@@ -61,15 +93,15 @@ class ApiService {
 
     // Streaks API
     async getStreaks(): Promise<Streak[]> {
-        const response = await fetch(`${API_BASE_URL}/api/streaks/`, {
-            headers: this.getAuthHeaders()
+        const response = await fetch(`${this.baseUrl}/api/streaks/`, {
+            headers: await this.getAuthHeaders()
         });
         return this.handleResponse<Streak[]>(response);
     }
 
     async getCurrentStreaks(): Promise<Streak[]> {
-        const response = await fetch(`${API_BASE_URL}/api/streaks/current/`, {
-            headers: this.getAuthHeaders()
+        const response = await fetch(`${this.baseUrl}/api/streaks/current/`, {
+            headers: await this.getAuthHeaders()
         });
         return this.handleResponse<Streak[]>(response);
     }
@@ -79,9 +111,9 @@ class ApiService {
         checkmarks: Record<string, boolean>;
         answers: Record<number, string>;
     }): Promise<Streak[]> {
-        const response = await fetch(`${API_BASE_URL}/api/streaks/update_streak/`, {
+        const response = await fetch(`${this.baseUrl}/api/streaks/update_streak/`, {
             method: 'POST',
-            headers: this.getAuthHeaders(),
+            headers: await this.getAuthHeaders(),
             body: JSON.stringify(data)
         });
         return this.handleResponse<Streak[]>(response);
@@ -90,50 +122,38 @@ class ApiService {
     async getUserSettings() {
         const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
             method: 'GET',
-            headers: this.getAuthHeaders(),
+            headers: await this.getAuthHeaders(),
         });
-        if (!response.ok) {
-            throw new Error('Failed to fetch user settings');
-        }
-        return response.json();
+        return this.handleResponse(response);
     }
 
     async updateUserSettings(settings: { recovery_date: string }) {
         const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
             method: 'POST',
-            headers: this.getAuthHeaders(),
+            headers: await this.getAuthHeaders(),
             body: JSON.stringify(settings),
         });
-        if (!response.ok) {
-            throw new Error('Failed to update user settings');
-        }
-        return response.json();
+        return this.handleResponse(response);
     }
 
     async updatePassword(oldPassword: string, newPassword: string) {
         const response = await fetch(`${this.baseUrl}/auth/account/`, {
             method: 'POST',
-            headers: this.getAuthHeaders(),
+            headers: await this.getAuthHeaders(),
             body: JSON.stringify({
                 old_password: oldPassword,
                 new_password: newPassword,
             }),
         });
-        if (!response.ok) {
-            throw new Error('Failed to update password');
-        }
-        return response.json();
+        return this.handleResponse(response);
     }
 
     async deleteAccount() {
         const response = await fetch(`${this.baseUrl}/auth/account/`, {
             method: 'DELETE',
-            headers: this.getAuthHeaders(),
+            headers: await this.getAuthHeaders(),
         });
-        if (!response.ok) {
-            throw new Error('Failed to delete account');
-        }
-        return response.json();
+        return this.handleResponse(response);
     }
 }
 

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { defaultQuestions, defaultCheckmarks } from '../localStorageUtils';
 import { apiService } from '../services/api';
+import { AuthService } from '../services/auth';
 
 const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000';
 const APP_NAMESPACE = '10StepJournal';
@@ -23,7 +24,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         if (token) {
-            fetchUserData();
+            if (!AuthService.isTokenExpired(token)) {
+                fetchUserData();
+            } else {
+                // Token is expired, try to refresh
+                AuthService.refreshToken().then(newToken => {
+                    if (newToken) {
+                        fetchUserData();
+                    } else {
+                        logout();
+                    }
+                });
+            }
         }
     }, []);
 
@@ -38,6 +50,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const userData = await response.json();
                 setUser(userData);
                 setIsAuthenticated(true);
+            } else if (response.status === 401) {
+                // Try to refresh token
+                const newToken = await AuthService.refreshToken();
+                if (newToken) {
+                    // Retry with new token
+                    const retryResponse = await fetch(`${API_BASE_URL}/auth/user/`, {
+                        headers: {
+                            'Authorization': `Bearer ${newToken}`
+                        }
+                    });
+                    if (retryResponse.ok) {
+                        const userData = await retryResponse.json();
+                        setUser(userData);
+                        setIsAuthenticated(true);
+                    } else {
+                        logout();
+                    }
+                } else {
+                    logout();
+                }
             } else {
                 logout();
             }
