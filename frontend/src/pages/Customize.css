@@ -1,0 +1,21 @@
+.drag-handle {
+    cursor: grab;
+    padding: 0.25rem;
+    margin-right: 0.5rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+}
+
+.drag-handle:hover {
+    color: #495057;
+}
+
+.drag-handle i {
+    font-size: 1.2rem;
+}
+
+.dragging {
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 2px dashed #6c757d !important;
+}
