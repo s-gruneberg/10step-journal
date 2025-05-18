@@ -1,5 +1,6 @@
 import { useDarkMode } from '../context/DarkModeContext'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import logo from '../assets/10steplogo.png'
 import { useState } from 'react'
 
@@ -7,7 +8,14 @@ const Header = () => {
     const { darkMode, toggleDarkMode } = useDarkMode()
     const [expanded, setExpanded] = useState(false)
     const toggleBtnClass = `btn btn-sm toggle-theme-btn ${darkMode ? 'btn-light' : 'btn-dark'}`
+    const { isAuthenticated, user, logout } = useAuth()
+    const navigate = useNavigate()
 
+    const handleLogout = () => {
+        logout()
+        navigate('/')
+        setExpanded(false)
+    }
 
     return (
         <nav
@@ -49,14 +57,8 @@ const Header = () => {
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to="/Inventory" className="nav-link" onClick={() => setExpanded(false)}>
+                            <NavLink to="/inventory" className="nav-link" onClick={() => setExpanded(false)}>
                                 Inventory
-                            </NavLink>
-                        </li>
-
-                        <li className="nav-item">
-                            <NavLink to="/customize" className="nav-link" onClick={() => setExpanded(false)}>
-                                Customize
                             </NavLink>
                         </li>
                         <li className="nav-item">
@@ -69,15 +71,23 @@ const Header = () => {
                                 Settings
                             </NavLink>
                         </li>
+                        {isAuthenticated && (
+                            <li className="nav-item">
+                                <button
+                                    className="btn btn-link nav-link"
+                                    onClick={handleLogout}
+                                >
+                                    Sign out ({user?.username})
+                                </button>
+                            </li>
+                        )}
                         <li className="nav-item">
                             <button
                                 className={toggleBtnClass}
-                                // on click toggle dark mod ean dclose the menu
                                 onClick={() => {
                                     toggleDarkMode()
                                     setExpanded(false)
-                                }
-                                }
+                                }}
                             >
                                 {darkMode ? 'Light' : 'Dark'}
                             </button>
@@ -85,7 +95,6 @@ const Header = () => {
                     </ul>
                 </div>
             </div>
-
         </nav>
     )
 }

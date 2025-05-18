@@ -1,10 +1,13 @@
 // pages/Home.tsx
 import { useDarkMode } from '../context/DarkModeContext'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const Home = () => {
   const { darkMode } = useDarkMode()
-  const buttonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} btn-lg`
+  const { isAuthenticated } = useAuth()
+  const primaryButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} btn-lg`
+  const secondaryButtonClass = `btn ${darkMode ? 'btn-secondary' : 'btn-outline-secondary'} ms-3`
 
   return (
     <div className="container mt-4">
@@ -18,15 +21,30 @@ const Home = () => {
       <p className="lead">
         No account required, no data collection, and no ads.
       </p>
-      <br />
-
-
 
       <div className="mt-4">
-        <Link to="/inventory" className={buttonClass}>
+        <Link to="/inventory" className={primaryButtonClass}>
           Go to Inventory
         </Link>
       </div>
+
+      {!isAuthenticated && (
+        <div className="mt-5 pt-4 border-top">
+          <h2 className="h4 mb-3">Want to keep track of your use streaks and save custom questions?</h2>
+          <div className="d-flex align-items-center">
+            <Link to="/register" className={primaryButtonClass}>
+              Register
+            </Link>
+            <span className="mx-3">or</span>
+            <Link to="/login" className={secondaryButtonClass}>
+              Login
+            </Link>
+          </div>
+          <p className="text-muted mt-3">
+            Creating an account lets you track your progress and customize your journal experience.
+          </p>
+        </div>
+      )}
     </div>
   )
 }

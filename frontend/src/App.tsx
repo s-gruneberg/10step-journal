@@ -6,13 +6,18 @@ import About from './pages/About.tsx'
 import Settings from './pages/Settings.tsx'
 import Customize from './pages/Customize.tsx'
 import Home from './pages/Home.tsx'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import { AuthProvider } from './context/AuthContext'
 
-function App() {
+function AppContent() {
   return (
     <Router>
       <Header />
       <div className="container my-5">
         <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<Home />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/about" element={<About />} />
@@ -21,6 +26,14 @@ function App() {
         </Routes>
       </div>
     </Router>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

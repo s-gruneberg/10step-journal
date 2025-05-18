@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Questions from '../components/Questions'
 import { getQuestions, saveAnswers, loadAnswers } from '../localStorageUtils.ts'
 import { downloadAsPDF, downloadAsWord, downloadAsText } from '../downloadUtils.ts'
@@ -15,6 +16,7 @@ export default function Inventory() {
     })
     const { darkMode } = useDarkMode()
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
+    const customizeButtonClass = `btn ${darkMode ? 'btn-primary' : 'btn-outline-primary'} mb-4`
 
     const handleAnswerChange = (index: number, value: string) => {
         const newAnswers = [...answers]
@@ -50,7 +52,12 @@ export default function Inventory() {
 
     return (
         <>
-            <h1 className="mb-2">Inventory</h1>
+            <div className="d-flex justify-content-between align-items-center">
+                <h1 className="mb-2">Inventory</h1>
+                <Link to="/customize" className={customizeButtonClass}>
+                    Customize Questions
+                </Link>
+            </div>
             <hr className="mb-4 mt-0" />
 
 
@@ -93,12 +100,8 @@ export default function Inventory() {
                             </button>
                         </li>
                     </ul>
-
                 </div>
-
-
             </div>
         </>
-
     )
 }
