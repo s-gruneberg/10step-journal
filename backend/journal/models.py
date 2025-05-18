@@ -23,23 +23,6 @@ class UserQuestions(models.Model):
         verbose_name_plural = 'User Questions'
 
 
-class JournalEntry(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
-    answers = models.JSONField()  # List of answers matching questions
-    checkmarks = models.JSONField()  # Dict of checkmark states
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        unique_together = ['user', 'date']
-        indexes = [
-            models.Index(fields=['user', 'date']),
-        ]
-        verbose_name = 'Journal Entry'
-        verbose_name_plural = 'Journal Entries'
-
-
 class Streak(models.Model):
     STREAK_TYPES = [
         ('journal', 'Journal'),

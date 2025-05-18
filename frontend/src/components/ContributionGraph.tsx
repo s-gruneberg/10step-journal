@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDarkMode } from '../context/DarkModeContext';
 
+interface Streak {
+    activity_type: string;
+    streak_type: string;
+    current_streak: number;
+    longest_streak: number;
+    last_entry_date: string;
+}
+
 interface ContributionGraphProps {
-    entries: Array<{
-        date: string;
-        answers: Record<string, string>;
-        checkmarks: Record<string, boolean>;
-    }>;
+    streaks: Streak[];
 }
 
 interface CalendarDay {
@@ -27,7 +31,7 @@ interface PopupState {
     hasEntry: boolean;
 }
 
-export default function ContributionGraph({ entries }: ContributionGraphProps) {
+export default function ContributionGraph({ streaks }: ContributionGraphProps) {
     const { darkMode } = useDarkMode();
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const days = ['Mon', 'Wed', 'Fri'];
@@ -59,7 +63,7 @@ export default function ContributionGraph({ entries }: ContributionGraphProps) {
 
     // Create a map of dates with entries
     const entryMap = new Map(
-        entries.map(entry => [entry.date.split('T')[0], entry])
+        streaks.map(streak => [streak.last_entry_date, streak])
     );
 
     // Generate calendar data

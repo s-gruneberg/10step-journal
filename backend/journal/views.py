@@ -6,12 +6,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, QuestionSerializer, JournalEntrySerializer, UserQuestionsSerializer, StreakSerializer
+from .serializers import UserSerializer, QuestionSerializer, UserQuestionsSerializer, StreakSerializer
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime, timedelta
-from .models import Question, JournalEntry, UserQuestions, Streak
+from .models import Question, UserQuestions, Streak
 from rest_framework.decorators import action
 import logging
 import pytz
@@ -55,25 +55,32 @@ class UserQuestionsViewSet(viewsets.ModelViewSet):
         UserQuestions.objects.filter(user=self.request.user).delete()
         serializer.save(user=self.request.user)
 
-class JournalEntryViewSet(viewsets.ModelViewSet):
-    serializer_class = JournalEntrySerializer
+class StreakViewSet(viewsets.ModelViewSet):
+    serializer_class = StreakSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'date'  # Use date field for lookups instead of id
 
     def get_queryset(self):
-        return JournalEntry.objects.filter(user=self.request.user)
+        return Streak.objects.filter(user=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        # Get user's timezone from request headers
-        user_tz = request.headers.get('X-Timezone', 'UTC')
-        try:
-            # Validate the timezone
-            user_timezone = pytz.timezone(user_tz)
-        except pytz.exceptions.UnknownTimeZoneError:
-            user_timezone = pytz.UTC
+    @action(detail=False, methods=['get'])
+    def current(self, request):
+        """Get current streaks for all activities"""
+        streaks = self.get_queryset()
+        serializer = self.get_serializer(streaks, many=True)
+        return Response(serializer.data)
 
+    @action(detail=False, methods=['post'])
+    def update_streak(self, request):
+        """Update streaks for a given date"""
         try:
-            # Convert the date to user's timezone for consistency
+            # Get user's timezone from request headers
+            user_tz = request.headers.get('X-Timezone', 'UTC')
+            try:
+                user_timezone = pytz.timezone(user_tz)
+            except pytz.exceptions.UnknownTimeZoneError:
+                user_timezone = pytz.UTC
+
+            # Parse the date
             date = request.data.get('date')
             if not date:
                 return Response(
@@ -81,11 +88,15 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Parse the date in user's timezone
+            # Convert to user's timezone
             date_obj = datetime.strptime(date, '%Y-%m-%d')
             date_obj = user_timezone.localize(date_obj)
-            
-            # Get the date range for the user's calendar day
+            entry_date = date_obj.date()
+
+            # Get yesterday in user's timezone
+            yesterday = (timezone.now().astimezone(user_timezone) - timedelta(days=1)).date()
+
+            # Check if an entry already exists for this date in user's timezone
             start_of_day = date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
             end_of_day = start_of_day + timedelta(days=1)
 
@@ -93,80 +104,57 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
             utc_start = start_of_day.astimezone(pytz.UTC)
             utc_end = end_of_day.astimezone(pytz.UTC)
 
-            # Check for existing entries in the user's calendar day
-            existing_entry = JournalEntry.objects.filter(
+            # Get existing streak for this date
+            existing_streak = Streak.objects.filter(
                 user=request.user,
-                created_at__gte=utc_start,
-                created_at__lt=utc_end
+                last_entry_date=entry_date
             ).first()
 
-            if existing_entry:
+            if existing_streak:
                 return Response(
-                    {"detail": "You have already saved a journal entry for this date."},
+                    {"detail": "You have already made a journal entry for this date in your timezone."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Store the date in UTC
-            request.data['date'] = date_obj.astimezone(pytz.UTC).date().isoformat()
-            return super().create(request, *args, **kwargs)
+            # Update journal streak if there are answers
+            answers_exist = any(request.data.get('answers', {}).values())
+            if answers_exist:
+                self._update_streak(
+                    request.user,
+                    'journal',
+                    'journal',
+                    entry_date,
+                    yesterday,
+                    True
+                )
+
+            # Update checkmark streaks
+            checkmarks = request.data.get('checkmarks', {})
+            for activity, is_checked in checkmarks.items():
+                self._update_streak(
+                    request.user,
+                    activity,
+                    'checkmark',
+                    entry_date,
+                    yesterday,
+                    is_checked
+                )
+
+            # Get updated streaks
+            streaks = self.get_queryset()
+            serializer = self.get_serializer(streaks, many=True)
+            return Response(serializer.data)
 
         except Exception as e:
-            logger.error(f"Error creating journal entry: {str(e)}")
+            logger.error(f"Error updating streaks: {str(e)}")
             return Response(
-                {"detail": f"Failed to create journal entry: {str(e)}"},
+                {"detail": f"Failed to update streaks: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    def perform_create(self, serializer):
-        entry = serializer.save(user=self.request.user)
-        self._update_streaks(entry)
-
-    def destroy(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()  # This will use lookup_field='date' automatically
-            instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            return Response(
-                {"detail": f"Failed to delete journal entry: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    def _update_streaks(self, entry):
-        # Get user's timezone from the most recent request
-        user_tz = self.request.headers.get('X-Timezone', 'UTC')
-        try:
-            user_timezone = pytz.timezone(user_tz)
-        except pytz.exceptions.UnknownTimeZoneError:
-            user_timezone = pytz.UTC
-
-        # Convert entry date to user's timezone
-        entry_date = timezone.localtime(
-            timezone.make_aware(datetime.combine(entry.date, datetime.min.time())),
-            timezone=user_timezone
-        ).date()
-
-        # Get yesterday in user's timezone
-        yesterday = (timezone.now().astimezone(user_timezone) - timedelta(days=1)).date()
-
-        # Update journal streak - only if this is the first entry of the day
-        has_entry_today = JournalEntry.objects.filter(
-            user=self.request.user,
-            date=entry_date
-        ).exists()
-
-        if not has_entry_today:  # Only update streak for the first entry of the day
-            self._update_single_streak('journal', 'journal', entry_date, yesterday, bool(any(entry.answers)))
-
-        # Update checkmark streaks - only if this is the first entry of the day
-        if not has_entry_today:
-            for activity, is_checked in entry.checkmarks.items():
-                if is_checked:
-                    self._update_single_streak(activity, 'checkmark', entry_date, yesterday, True)
-
-    def _update_single_streak(self, activity_type, streak_type, entry_date, yesterday, is_completed):
+    def _update_streak(self, user, activity_type, streak_type, entry_date, yesterday, is_completed):
         streak, created = Streak.objects.get_or_create(
-            user=self.request.user,
+            user=user,
             activity_type=activity_type,
             streak_type=streak_type,
             defaults={'last_entry_date': entry_date}
@@ -183,17 +171,3 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
         elif streak.last_entry_date < yesterday:
             streak.current_streak = 0
             streak.save()
-
-class StreakViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = StreakSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Streak.objects.filter(user=self.request.user)
-
-    @action(detail=False, methods=['get'])
-    def current(self):
-        """Get current streaks for all activities"""
-        streaks = self.get_queryset()
-        serializer = self.get_serializer(streaks, many=True)
-        return Response(serializer.data)

@@ -7,14 +7,6 @@ interface UserQuestions {
     updated_at: string;
 }
 
-interface JournalEntry {
-    date: string;
-    answers: Record<string, string>;
-    checkmarks: Record<string, boolean>;
-    created_at: string;
-    updated_at: string;
-}
-
 interface Streak {
     activity_type: string;
     streak_type: string;
@@ -58,33 +50,6 @@ class ApiService {
         return this.handleResponse<UserQuestions>(response);
     }
 
-    // Journal Entries API
-    async getJournalEntries(): Promise<JournalEntry[]> {
-        const response = await fetch(`${API_BASE_URL}/api/journal-entries/`, {
-            headers: this.getHeaders()
-        });
-        return this.handleResponse<JournalEntry[]>(response);
-    }
-
-    async saveJournalEntry(data: Partial<JournalEntry>): Promise<JournalEntry> {
-        const response = await fetch(`${API_BASE_URL}/api/journal-entries/`, {
-            method: 'POST',
-            headers: this.getHeaders(),
-            body: JSON.stringify(data)
-        });
-        return this.handleResponse<JournalEntry>(response);
-    }
-
-    async deleteJournalEntry(date: string): Promise<void> {
-        const response = await fetch(`${API_BASE_URL}/api/journal-entries/${date}/`, {
-            method: 'DELETE',
-            headers: this.getHeaders()
-        });
-        if (!response.ok) {
-            throw new Error('Failed to delete journal entry');
-        }
-    }
-
     // Streaks API
     async getStreaks(): Promise<Streak[]> {
         const response = await fetch(`${API_BASE_URL}/api/streaks/`, {
@@ -96,6 +61,19 @@ class ApiService {
     async getCurrentStreaks(): Promise<Streak[]> {
         const response = await fetch(`${API_BASE_URL}/api/streaks/current/`, {
             headers: this.getHeaders()
+        });
+        return this.handleResponse<Streak[]>(response);
+    }
+
+    async updateStreak(data: {
+        date: string;
+        checkmarks: Record<string, boolean>;
+        answers: Record<number, string>;
+    }): Promise<Streak[]> {
+        const response = await fetch(`${API_BASE_URL}/api/streaks/update_streak/`, {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(data)
         });
         return this.handleResponse<Streak[]>(response);
     }

@@ -13,7 +13,6 @@ from rest_framework_simplejwt.views import TokenRefreshView
 # Create a router for our ViewSet-based APIs
 router = DefaultRouter()
 router.register(r'user-questions', views.UserQuestionsViewSet, basename='user-questions')
-router.register(r'journal-entries', views.JournalEntryViewSet, basename='journal')
 router.register(r'streaks', views.StreakViewSet, basename='streaks')
 
 # Define URL patterns

@@ -50,14 +50,6 @@ export default function Inventory() {
             setSaveError(null);
             setShowDuplicateMessage(false);
 
-            // Create an object mapping question index to answer
-            const answersObj: Record<string, string> = {};
-            answers.forEach((answer, index) => {
-                if (answer.trim()) { // Only save non-empty answers
-                    answersObj[index.toString()] = answer;
-                }
-            });
-
             // Get current checkmark states
             const checkmarkStates = getCheckmarkStates();
 
@@ -67,24 +59,37 @@ export default function Inventory() {
                 String(now.getMonth() + 1).padStart(2, '0') + '-' +
                 String(now.getDate()).padStart(2, '0');
 
-            const saveData = {
-                date: today,
-                answers: answersObj,
-                checkmarks: checkmarkStates
-            };
+            // Convert answers array to object for storage
+            const answersObj: Record<number, string> = {};
+            answers.forEach((answer, index) => {
+                if (answer.trim()) {
+                    answersObj[index] = answer;
+                }
+            });
 
-            // Add timezone header for backend
-            await apiService.saveJournalEntry(saveData);
-        } catch (error) {
-            console.error('Failed to save journal entry:', error);
+            try {
+                // Update streaks with both answers and checkmarks
+                await apiService.updateStreak({
+                    date: today,
+                    checkmarks: checkmarkStates,
+                    answers: answersObj
+                });
 
-            // Check if it's a duplicate entry error from our backend
-            if (error instanceof Error &&
-                error.message.includes('You have already saved a journal entry for this date')) {
-                setShowDuplicateMessage(true);
-            } else {
-                setSaveError('Failed to save your entry. Your work is saved locally.');
+                // Save answers locally
+                saveAnswers(answersObj);
+            } catch (error: any) {
+                // Handle specific error cases
+                if (error.message.includes("already made a journal entry")) {
+                    setShowDuplicateMessage(true);
+                } else {
+                    setSaveError(error.message || 'Failed to update your streaks. Your answers are saved locally.');
+                }
+                // Still save answers locally even if streak update fails
+                saveAnswers(answersObj);
             }
+        } catch (error) {
+            console.error('Failed to save:', error);
+            setSaveError('Failed to save your entry. Please try again.');
         } finally {
             setIsSaving(false);
         }
