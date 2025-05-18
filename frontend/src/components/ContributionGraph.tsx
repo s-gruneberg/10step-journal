@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDarkMode } from '../context/DarkModeContext';
 
 interface Streak {
@@ -28,27 +28,27 @@ interface PopupState {
     x: number;
     y: number;
     date: Date | null;
-    hasEntry: boolean;
 }
 
 export default function ContributionGraph({ streaks }: ContributionGraphProps) {
     const { darkMode } = useDarkMode();
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const days = ['Mon', 'Wed', 'Fri'];
-    const [isVertical, setIsVertical] = useState(false);
+    const [containerWidth, setContainerWidth] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
     const [popup, setPopup] = useState<PopupState>({
         visible: false,
         x: 0,
         y: 0,
-        date: null,
-        hasEntry: false
+        date: null
     });
 
     // Handle resize events
     useEffect(() => {
         const handleResize = () => {
-            const width = window.innerWidth;
-            setIsVertical(width < 768);
+            if (containerRef.current) {
+                setContainerWidth(containerRef.current.offsetWidth);
+            }
         };
 
         handleResize();
@@ -100,44 +100,56 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
     });
 
     const handleCellClick = (event: React.MouseEvent, day: CalendarDay) => {
+        if (!containerRef.current) return;
+
         const rect = (event.target as HTMLElement).getBoundingClientRect();
+        const containerRect = containerRef.current.getBoundingClientRect();
+
         setPopup({
             visible: true,
-            x: rect.left + window.scrollX,
-            y: rect.top + window.scrollY - 40, // Position above the cell
-            date: day.date,
-            hasEntry: day.hasEntry
+            x: rect.left - containerRect.left + rect.width / 2,
+            y: rect.top - containerRect.top - 30,
+            date: day.date
         });
 
-        // Hide popup after 2 seconds
         setTimeout(() => {
             setPopup(prev => ({ ...prev, visible: false }));
         }, 2000);
     };
 
-    // Calculate sizes based on screen width
-    const baseSize = isVertical ? 12 : 15;
-    const cellSize = Math.min(baseSize, Math.max(8, window.innerWidth / 50));
+    // Calculate sizes and visible weeks
+    const cellSize = 10;
     const cellSpacing = 2;
-    const dayLabelWidth = isVertical ? 30 : 40;
+    const dayLabelWidth = 30;
+    const rightPadding = 16; // Add padding for the right side
+
+    // Calculate how many weeks we can show based on container width
+    const maxVisibleWeeks = Math.floor((containerWidth - dayLabelWidth - rightPadding) / (cellSize + cellSpacing));
+    const visibleWeeks = weeks.slice(-Math.min(maxVisibleWeeks, weeks.length));
+    const visibleMonths = uniqueMonths.slice(-Math.min(maxVisibleWeeks / 4, uniqueMonths.length));
 
     return (
-        <div style={{
-            padding: isVertical ? '10px' : '20px',
-            display: 'flex',
-            flexDirection: 'column',
-            width: 'fit-content',
-            gap: '8px',
-            fontSize: isVertical ? '10px' : '12px'
-        }}>
+        <div
+            ref={containerRef}
+            style={{
+                padding: '20px 0 20px 0', // Remove horizontal padding since we're handling it in the content
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                gap: '8px',
+                fontSize: '12px',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
             {/* Month labels */}
             <div style={{
                 display: 'flex',
-                marginLeft: dayLabelWidth + (isVertical ? 4 : 8),
-                gap: '4px',
-                flexWrap: 'wrap'
+                marginLeft: dayLabelWidth + 8,
+                marginRight: rightPadding,
+                gap: '4px'
             }}>
-                {uniqueMonths.map((month, index) => (
+                {visibleMonths.map((month, index) => (
                     <div
                         key={index}
                         style={{
@@ -153,17 +165,16 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
 
             <div style={{
                 display: 'flex',
-                flexDirection: isVertical ? 'column' : 'row'
+                flexDirection: 'row',
+                paddingRight: rightPadding
             }}>
                 {/* Day labels */}
                 <div style={{
                     display: 'flex',
-                    flexDirection: isVertical ? 'row' : 'column',
-                    width: isVertical ? '100%' : dayLabelWidth,
-                    marginRight: isVertical ? 0 : '8px',
-                    marginBottom: isVertical ? '8px' : 0,
-                    gap: isVertical ? `${cellSize * 2}px` : `${cellSize + 4}px`,
-                    justifyContent: isVertical ? 'flex-start' : 'flex-start'
+                    flexDirection: 'column',
+                    width: dayLabelWidth,
+                    marginRight: '8px',
+                    gap: `${cellSize + 4}px`
                 }}>
                     {days.map(day => (
                         <div
@@ -172,8 +183,7 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
                                 color: darkMode ? '#8b949e' : '#57606a',
                                 height: cellSize,
                                 lineHeight: `${cellSize}px`,
-                                textAlign: isVertical ? 'left' : 'right',
-                                width: isVertical ? '20px' : 'auto'
+                                textAlign: 'right'
                             }}
                         >
                             {day}
@@ -184,15 +194,15 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
                 {/* Contribution grid */}
                 <div style={{
                     display: 'flex',
-                    flexDirection: isVertical ? 'column' : 'row',
+                    flexDirection: 'row',
                     gap: `${cellSpacing}px`
                 }}>
-                    {weeks.map((week, weekIndex) => (
+                    {visibleWeeks.map((week, weekIndex) => (
                         <div
                             key={weekIndex}
                             style={{
                                 display: 'flex',
-                                flexDirection: isVertical ? 'row' : 'column',
+                                flexDirection: 'column',
                                 gap: `${cellSpacing}px`
                             }}
                         >
@@ -205,11 +215,11 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
                                         height: `${cellSize}px`,
                                         backgroundColor: day.hasEntry
                                             ? darkMode
-                                                ? '#196c2e'  // Dark mode green
-                                                : '#40c463'  // Light mode green
+                                                ? '#196c2e'
+                                                : '#40c463'
                                             : darkMode
-                                                ? '#2d333b'  // Dark mode empty
-                                                : '#ebedf0', // Light mode empty
+                                                ? '#2d333b'
+                                                : '#ebedf0',
                                         borderRadius: '2px',
                                         cursor: 'pointer'
                                     }}
@@ -229,14 +239,14 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
                     backgroundColor: darkMode ? '#2d333b' : '#ffffff',
                     border: `1px solid ${darkMode ? '#444d56' : '#d1d5da'}`,
                     borderRadius: '6px',
-                    padding: '8px',
+                    padding: '4px 8px',
                     fontSize: '12px',
                     color: darkMode ? '#c9d1d9' : '#24292e',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-                    zIndex: 1000,
-                    pointerEvents: 'none'
+                    transform: 'translateX(-50%)',
+                    whiteSpace: 'nowrap'
                 }}>
-                    {popup.date.toLocaleDateString()} - {popup.hasEntry ? 'Entry made' : 'No entry'}
+                    {popup.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
             )}
         </div>

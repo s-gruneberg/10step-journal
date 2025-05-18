@@ -64,13 +64,13 @@ export default function Insights() {
     const checkmarkStreaks = streaks.filter(s => s.activity_type !== 'journal');
 
     return (
-        <div>
+        <div className="container-fluid px-3 px-md-4">
             <h1 className="mb-2">Insights</h1>
             <hr className="mb-4 mt-1" />
 
-            <div className="row">
+            <div className="row g-4">
                 {/* Current Streaks Section */}
-                <div className="col-md-6 mb-4">
+                <div className="col-12 col-md-6">
                     <h2 className="h4 mb-3">Current Streaks</h2>
                     <div className={`card ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}>
                         <div className="card-body">
@@ -91,7 +91,7 @@ export default function Insights() {
                 </div>
 
                 {/* Longest Streaks Section */}
-                <div className="col-md-6 mb-4">
+                <div className="col-12 col-md-6">
                     <h2 className="h4 mb-3">Longest Streaks</h2>
                     <div className={`card ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}>
                         <div className="card-body">
@@ -113,15 +113,20 @@ export default function Insights() {
 
                 {/* Journal History Section */}
                 <div className="col-12">
-                    <h2 className="h4 mb-3">Journal History</h2>
-                    <div className={`card ${darkMode ? 'bg-dark text-light border-secondary' : ''}`} style={{ width: 'fit-content', margin: '0 auto' }}>
-                        <div className="card-body" style={{ padding: '1rem' }}>
+                    <h2 className="h4 mb-4">History</h2>
+                    <div className={`card ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                        style={{
+                            width: 'fit-content',
+                            maxWidth: '100%',
+                            margin: '0 auto'
+                        }}>
+                        <div className="card-body p-0">
                             {streaks.length === 0 ? (
-                                <p className="text-muted">No journal entries yet.</p>
+                                <p className="text-muted p-3">No journal entries yet.</p>
                             ) : (
                                 <>
                                     <ContributionGraph streaks={streaks} />
-                                    <div className="d-flex align-items-center justify-content-center mt-3">
+                                    <div className="d-flex align-items-center justify-content-center py-3">
                                         <span className="text-muted me-2" style={{ fontSize: '12px' }}>Less</span>
                                         {[0, 1].map(level => (
                                             <div
