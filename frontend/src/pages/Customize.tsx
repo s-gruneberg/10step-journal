@@ -233,9 +233,18 @@ export default function CustomizeQuestions() {
                 ))}
             </ul>
 
-            <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
-                Restore Defaults
-            </button>
+            <div className="d-flex justify-content-between">
+                <button className={restoreButtonClass} onClick={handleRestoreDefaults}>
+                    Restore Defaults
+                </button>
+                <button
+                    className={saveButtonClass}
+                    onClick={handleSave}
+                    disabled={!hasChanges || isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Save'}
+                </button>
+            </div>
         </div>
     )
 }

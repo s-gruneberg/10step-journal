@@ -187,18 +187,20 @@ const Settings = () => {
                     <div className="card mb-4">
                         <div className={`card-body ${darkMode ? 'bg-dark text-light' : ''}`}>
                             <h5 className="card-title mb-3">Account Management</h5>
-                            <button
-                                className={`${primaryBtnClass} me-2`}
-                                onClick={() => setShowPasswordModal(true)}
-                            >
-                                Reset Password
-                            </button>
-                            <button
-                                className={dangerBtnClass}
-                                onClick={() => setShowDeleteModal(true)}
-                            >
-                                Delete Account
-                            </button>
+                            <div className="d-flex gap-3">
+                                <button
+                                    className={primaryBtnClass}
+                                    onClick={() => setShowPasswordModal(true)}
+                                >
+                                    Reset Password
+                                </button>
+                                <button
+                                    className={dangerBtnClass}
+                                    onClick={() => setShowDeleteModal(true)}
+                                >
+                                    Delete Account
+                                </button>
+                            </div>
                         </div>
                     </div>
 

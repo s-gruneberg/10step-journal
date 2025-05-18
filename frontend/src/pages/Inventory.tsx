@@ -169,20 +169,7 @@ export default function Inventory() {
                 onClear={handleClear}
             />
             <div className="d-flex justify-content-between align-items-center mt-4">
-                {isAuthenticated && (
-                    <button
-                        className={`btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`}
-                        onClick={handleSave}
-                        disabled={isSaving}
-                    >
-                        {isSaving ? 'Saving...' : 'Save'}
-                    </button>
-                )}
-                {!isAuthenticated && (
-                    <div className="text-muted">
-                        <small>Sign in to save your entries</small>
-                    </div>
-                )}
+
                 <div className="dropdown">
                     <button className={buttonClass} type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Download
@@ -214,6 +201,20 @@ export default function Inventory() {
                         </li>
                     </ul>
                 </div>
+                {isAuthenticated && (
+                    <button
+                        className={`btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`}
+                        onClick={handleSave}
+                        disabled={isSaving}
+                    >
+                        {isSaving ? 'Saving...' : 'Save'}
+                    </button>
+                )}
+                {!isAuthenticated && (
+                    <div className="text-muted">
+                        <small>Sign in to save your entries</small>
+                    </div>
+                )}
             </div>
 
             {/* Duplicate Entry Modal */}
