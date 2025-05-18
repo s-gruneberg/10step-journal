@@ -7,7 +7,7 @@ import { useState } from 'react'
 const Header = () => {
     const { darkMode, toggleDarkMode } = useDarkMode()
     const [expanded, setExpanded] = useState(false)
-    const toggleBtnClass = `btn btn-sm toggle-theme-btn ${darkMode ? 'btn-light' : 'btn-dark'}`
+    const toggleBtnClass = `btn btn-sm ms-1 toggle-theme-btn ${darkMode ? 'btn-light' : 'btn-dark'}`
     const { isAuthenticated, user, logout } = useAuth()
     const navigate = useNavigate()
 

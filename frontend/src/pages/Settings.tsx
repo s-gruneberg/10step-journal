@@ -177,7 +177,7 @@ const Settings = () => {
                                 onChange={(e) => handleRecoveryDateChange(e.target.value)}
                             />
                             {recoveryDate && (
-                                <p className="text-muted">
+                                <p className="text">
                                     Days in recovery: {Math.floor((Date.now() - new Date(recoveryDate).getTime()) / (1000 * 60 * 60 * 24))}
                                 </p>
                             )}
@@ -186,22 +186,13 @@ const Settings = () => {
 
                     <div className="card mb-4">
                         <div className={`card-body ${darkMode ? 'bg-dark text-light' : ''}`}>
-                            <h5 className="card-title">Security</h5>
+                            <h5 className="card-title mb-3">Account Management</h5>
                             <button
                                 className={`${primaryBtnClass} me-2`}
                                 onClick={() => setShowPasswordModal(true)}
                             >
                                 Reset Password
                             </button>
-                        </div>
-                    </div>
-
-                    <div className="card mb-4">
-                        <div className={`card-body ${darkMode ? 'bg-dark text-light' : ''}`}>
-                            <h5 className="card-title">Danger Zone</h5>
-                            <p className="card-text text-danger">
-                                Deleting your account will permanently remove all your data.
-                            </p>
                             <button
                                 className={dangerBtnClass}
                                 onClick={() => setShowDeleteModal(true)}
@@ -210,6 +201,8 @@ const Settings = () => {
                             </button>
                         </div>
                     </div>
+
+
                 </>
             ) : (
                 <div className="alert alert-info">

@@ -88,7 +88,7 @@ export default function Insights() {
                             <div className="card-body">
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h3 className="h5 mb-0">Recovery Streak</h3>
+                                        <h3 className="h5 mb-0">Days In Recovery</h3>
                                         <p className="text-muted mb-0">Since {new Date(recoveryDate).toLocaleDateString()}</p>
                                     </div>
                                     <div className="text-end">
