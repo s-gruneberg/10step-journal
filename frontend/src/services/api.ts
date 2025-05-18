@@ -75,6 +75,16 @@ class ApiService {
         return this.handleResponse<JournalEntry>(response);
     }
 
+    async deleteJournalEntry(date: string): Promise<void> {
+        const response = await fetch(`${API_BASE_URL}/api/journal-entries/${date}/`, {
+            method: 'DELETE',
+            headers: this.getHeaders()
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete journal entry');
+        }
+    }
+
     // Streaks API
     async getStreaks(): Promise<Streak[]> {
         const response = await fetch(`${API_BASE_URL}/api/streaks/`, {

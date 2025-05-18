@@ -58,6 +58,7 @@ class UserQuestionsViewSet(viewsets.ModelViewSet):
 class JournalEntryViewSet(viewsets.ModelViewSet):
     serializer_class = JournalEntrySerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'date'  # Use date field for lookups instead of id
 
     def get_queryset(self):
         return JournalEntry.objects.filter(user=self.request.user)
@@ -84,6 +85,11 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
 
             return super().create(request, *args, **kwargs)
         except Exception as e:
+            if 'duplicate key' in str(e).lower():
+                return Response(
+                    {"detail": "You have already saved a journal entry for this date."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             return Response(
                 {"detail": f"Failed to create journal entry: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -92,6 +98,17 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entry = serializer.save(user=self.request.user)
         self._update_streaks(entry)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()  # This will use lookup_field='date' automatically
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response(
+                {"detail": f"Failed to delete journal entry: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def _update_streaks(self, entry):
         # Get user's timezone from the most recent request

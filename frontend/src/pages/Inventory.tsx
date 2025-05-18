@@ -25,6 +25,7 @@ export default function Inventory() {
     const { isAuthenticated } = useAuth()
     const [isSaving, setIsSaving] = useState(false)
     const [saveError, setSaveError] = useState<string | null>(null)
+    const [showDuplicateMessage, setShowDuplicateMessage] = useState(false)
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
     const customizeButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} mb-4`
 
@@ -45,33 +46,44 @@ export default function Inventory() {
 
     const handleSave = async () => {
         try {
-            setIsSaving(true)
-            setSaveError(null)
+            setIsSaving(true);
+            setSaveError(null);
+            setShowDuplicateMessage(false);
 
             // Create an object mapping question index to answer
-            const answersObj: Record<string, string> = {}
+            const answersObj: Record<string, string> = {};
             answers.forEach((answer, index) => {
                 if (answer.trim()) { // Only save non-empty answers
-                    answersObj[index.toString()] = answer
+                    answersObj[index.toString()] = answer;
                 }
-            })
+            });
 
             // Get current checkmark states
-            const checkmarkStates = getCheckmarkStates()
+            const checkmarkStates = getCheckmarkStates();
+            const today = new Date().toISOString().split('T')[0];
 
-            // Save to backend
-            await apiService.saveJournalEntry({
-                date: new Date().toISOString().split('T')[0],
+            const saveData = {
+                date: today,
                 answers: answersObj,
                 checkmarks: checkmarkStates
-            })
+            };
+
+            // Save to backend
+            await apiService.saveJournalEntry(saveData);
         } catch (error) {
-            console.error('Failed to save journal entry:', error)
-            setSaveError('Failed to save your entry. Your work is saved locally.')
+            console.error('Failed to save journal entry:', error);
+
+            // Check if it's a duplicate entry error from our backend
+            if (error instanceof Error &&
+                error.message.includes('You have already saved a journal entry for this date')) {
+                setShowDuplicateMessage(true);
+            } else {
+                setSaveError('Failed to save your entry. Your work is saved locally.');
+            }
         } finally {
-            setIsSaving(false)
+            setIsSaving(false);
         }
-    }
+    };
 
     const handleClear = () => {
         const emptyAnswers = Array(questions.length).fill('')
@@ -193,6 +205,32 @@ export default function Inventory() {
                     </ul>
                 </div>
             </div>
+
+            {/* Duplicate Entry Modal */}
+            {showDuplicateMessage && (
+                <div className="modal d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog" role="document">
+                        <div className={`modal-content ${darkMode ? 'bg-dark text-light' : ''}`}>
+                            <div className="modal-header">
+                                <h5 className="modal-title">Journal Entry Exists</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowDuplicateMessage(false)} aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <p>You have already saved a journal entry for today.</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className={`btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`}
+                                    onClick={() => setShowDuplicateMessage(false)}
+                                >
+                                    OK
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

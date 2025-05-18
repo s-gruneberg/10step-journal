@@ -102,13 +102,16 @@ export default function CustomizeQuestions() {
 
         try {
             if (isAuthenticated) {
-                // For authenticated users, save only to backend
+                // For authenticated users, save to backend
                 await apiService.saveUserQuestions({
                     questions: tempQuestions,
                     checkmarks: tempCheckmarks
                 });
+                // After successful save to backend, update localStorage to stay in sync
+                setQuestions(tempQuestions);
+                setCheckmarks(tempCheckmarks);
             } else {
-                // For non-authenticated users, save to local storage
+                // For non-authenticated users, save to local storage only
                 setQuestions(tempQuestions);
                 setCheckmarks(tempCheckmarks);
             }

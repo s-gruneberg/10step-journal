@@ -3,6 +3,9 @@ import type { ReactNode } from 'react';
 import { defaultQuestions, defaultCheckmarks } from '../localStorageUtils';
 import { apiService } from '../services/api';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000';
+const APP_NAMESPACE = '10StepJournal';
+
 interface AuthContextType {
     isAuthenticated: boolean;
     user: any | null;
@@ -12,8 +15,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -46,6 +47,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const clearLocalStorage = () => {
+        const keys = ['JournalData', 'Questions', 'Checkmarks', 'CheckmarkStates', 'Answers'];
+        keys.forEach(key => {
+            localStorage.removeItem(`${APP_NAMESPACE}.${key}`);
+        });
+    };
+
+    const initializeUserData = async () => {
+        // Initialize JournalData with theme preference
+        const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const journalData = {
+            darkMode: darkMode ? 'dark' : 'light'
+        };
+        localStorage.setItem(`${APP_NAMESPACE}.JournalData`, JSON.stringify(journalData));
+
+        try {
+            // Try to get user's questions and checkmarks from the database
+            const userQuestions = await apiService.getUserQuestions();
+
+            // Set the questions and checkmarks from the database
+            localStorage.setItem(`${APP_NAMESPACE}.Questions`, JSON.stringify(userQuestions.questions));
+            localStorage.setItem(`${APP_NAMESPACE}.Checkmarks`, JSON.stringify(userQuestions.checkmarks));
+        } catch (error) {
+            console.error('Failed to initialize user data from database:', error);
+
+            // Set defaults if database fetch fails
+            localStorage.setItem(`${APP_NAMESPACE}.Questions`, JSON.stringify(defaultQuestions));
+            localStorage.setItem(`${APP_NAMESPACE}.Checkmarks`, JSON.stringify(defaultCheckmarks));
+        }
+
+        // Always initialize empty states
+        localStorage.setItem(`${APP_NAMESPACE}.CheckmarkStates`, JSON.stringify({}));
+        localStorage.setItem(`${APP_NAMESPACE}.Answers`, JSON.stringify({}));
+    };
+
     const login = async (username: string, password: string) => {
         const response = await fetch(`${API_BASE_URL}/auth/login/`, {
             method: 'POST',
@@ -61,9 +97,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         const data = await response.json();
+        clearLocalStorage(); // Clear any existing data
         localStorage.setItem('accessToken', data.access);
         localStorage.setItem('refreshToken', data.refresh);
         await fetchUserData();
+        await initializeUserData(); // Initialize with user's data from database
     };
 
     const register = async (username: string, email: string, password: string, password2: string) => {
@@ -80,6 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw new Error(Object.values(error).flat().join(', '));
         }
 
+        clearLocalStorage(); // Clear any existing data
+
         // First login to get the token
         await login(username, password);
 
@@ -89,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 questions: defaultQuestions,
                 checkmarks: defaultCheckmarks
             });
+            await initializeUserData(); // Initialize localStorage with the defaults
         } catch (error) {
             console.error('Failed to initialize user questions:', error);
             // Don't throw error here as registration was successful
@@ -100,12 +141,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
 
-        // Clear app-specific data using namespaced keys
-        const APP_NAMESPACE = '10StepJournal';
-        const keys = ['Checkmarks', 'Questions', 'CheckmarkStates', 'Answers'];
-        keys.forEach(key => {
-            localStorage.removeItem(`${APP_NAMESPACE}.${key}`);
-        });
+        // Clear app-specific data
+        clearLocalStorage();
 
         // Clear any remaining session storage
         sessionStorage.clear();
