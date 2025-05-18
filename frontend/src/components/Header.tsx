@@ -1,13 +1,13 @@
 import { useDarkMode } from '../context/DarkModeContext'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/10steplogo.png'
 import { useState } from 'react'
+import './Header.css'
 
 const Header = () => {
-    const { darkMode, toggleDarkMode } = useDarkMode()
+    const { darkMode } = useDarkMode()
     const [expanded, setExpanded] = useState(false)
-    const toggleBtnClass = `btn btn-sm ms-1 toggle-theme-btn ${darkMode ? 'btn-light' : 'btn-dark'}`
     const { isAuthenticated, user, logout } = useAuth()
     const navigate = useNavigate()
 
@@ -19,9 +19,9 @@ const Header = () => {
 
     return (
         <nav
-            className={`navbar navbar-expand-md ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} border-bottom px-2 py-2`}
+            className={`navbar navbar-expand-md ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} border-bottom safe-area-padding`}
         >
-            <div className="container-fluid">
+            <div className="container-fluid py-2">
                 {/* Top Row: Logo/Title and Hamburger */}
                 <div className="d-flex justify-content-between align-items-center w-100 flex-wrap">
                     <div className="d-flex align-items-center">
@@ -51,7 +51,6 @@ const Header = () => {
                 {/* Collapsible nav links */}
                 <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`}>
                     <ul className="navbar-nav ms-auto">
-
                         <li className="nav-item">
                             <NavLink to="/inventory" className="nav-link" onClick={() => setExpanded(false)}>
                                 Inventory
@@ -74,7 +73,7 @@ const Header = () => {
                                 Settings
                             </NavLink>
                         </li>
-                        {isAuthenticated && (
+                        {isAuthenticated ? (
                             <li className="nav-item">
                                 <button
                                     className="btn btn-link nav-link"
@@ -83,18 +82,13 @@ const Header = () => {
                                     Logout
                                 </button>
                             </li>
+                        ) : (
+                            <li className="nav-item">
+                                <NavLink to="/login" className="nav-link" onClick={() => setExpanded(false)}>
+                                    Login
+                                </NavLink>
+                            </li>
                         )}
-                        <li className="nav-item">
-                            <button
-                                className={toggleBtnClass}
-                                onClick={() => {
-                                    toggleDarkMode()
-                                    setExpanded(false)
-                                }}
-                            >
-                                {darkMode ? 'Light' : 'Dark'}
-                            </button>
-                        </li>
                     </ul>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import { useDarkMode } from '../context/DarkModeContext'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { useState, useEffect } from 'react'
 import { apiService } from '../services/api'
 import Modal from 'react-bootstrap/Modal'

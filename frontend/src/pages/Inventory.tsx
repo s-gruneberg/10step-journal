@@ -4,7 +4,7 @@ import Questions from '../components/Questions'
 import { getQuestions, saveAnswers, getAnswers, getCheckmarkStates } from '../localStorageUtils.ts'
 import { downloadAsPDF, downloadAsWord, downloadAsText } from '../downloadUtils.ts'
 import { useDarkMode } from '../context/DarkModeContext.tsx'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { apiService } from '../services/api'
 
 export default function Inventory() {

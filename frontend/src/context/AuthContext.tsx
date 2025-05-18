@@ -15,7 +15,7 @@ interface AuthContextType {
     register: (username: string, email: string, password: string, password2: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -80,9 +80,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const clearLocalStorage = () => {
-        const keys = ['JournalData', 'Questions', 'Checkmarks', 'CheckmarkStates', 'Answers'];
+        // List all app-specific keys with their namespace
+        const keys = [
+            `${APP_NAMESPACE}.JournalData`,
+            `${APP_NAMESPACE}.Questions`,
+            `${APP_NAMESPACE}.Checkmarks`,
+            `${APP_NAMESPACE}.CheckmarkStates`,
+            `${APP_NAMESPACE}.Answers`
+        ];
+
+        // Remove each key
         keys.forEach(key => {
-            localStorage.removeItem(`${APP_NAMESPACE}.${key}`);
+            localStorage.removeItem(key);
         });
     };
 
