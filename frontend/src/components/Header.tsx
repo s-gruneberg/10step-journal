@@ -51,11 +51,7 @@ const Header = () => {
                 {/* Collapsible nav links */}
                 <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`}>
                     <ul className="navbar-nav ms-auto">
-                        <li className="nav-item">
-                            <NavLink to="/" className="nav-link" onClick={() => setExpanded(false)}>
-                                Home
-                            </NavLink>
-                        </li>
+
                         <li className="nav-item">
                             <NavLink to="/inventory" className="nav-link" onClick={() => setExpanded(false)}>
                                 Inventory
@@ -84,7 +80,7 @@ const Header = () => {
                                     className="btn btn-link nav-link"
                                     onClick={handleLogout}
                                 >
-                                    Sign out ({user?.username})
+                                    Logout
                                 </button>
                             </li>
                         )}

@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import CurrentUserView
+from .views import CurrentUserView, AccountManagementView
 from .auth_views import (
     CustomTokenObtainPairView,
     RegisterView,
@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 router = DefaultRouter()
 router.register(r'user-questions', views.UserQuestionsViewSet, basename='user-questions')
 router.register(r'streaks', views.StreakViewSet, basename='streaks')
+router.register(r'user-settings', views.UserSettingsViewSet, basename='user-settings')
 
 # Define URL patterns
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path('auth/user/', CurrentUserView.as_view(), name='current_user'),
     path('auth/password-reset/', RequestPasswordResetView.as_view(), name='password_reset'),
     path('auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('auth/account/', AccountManagementView.as_view(), name='account_management'),
 
     # API endpoints
     path('api/', include(router.urls)),

@@ -13,10 +13,15 @@ interface Streak {
     last_entry_date: string;
 }
 
+interface UserSettings {
+    recovery_date: string | null;
+}
+
 export default function Insights() {
     const { darkMode } = useDarkMode()
     const { isAuthenticated } = useAuth()
     const [streaks, setStreaks] = useState<Streak[]>([])
+    const [recoveryDate, setRecoveryDate] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -26,6 +31,10 @@ export default function Insights() {
                 // Get streaks from API
                 const streaksData = await apiService.getStreaks();
                 setStreaks(streaksData);
+
+                // Get user settings for recovery date
+                const settings = await apiService.getUserSettings();
+                setRecoveryDate(settings.recovery_date);
             } catch (err) {
                 setError('Failed to load insights data. Please try again later.');
             } finally {
@@ -62,6 +71,9 @@ export default function Insights() {
 
     const journalStreak = streaks.find(s => s.activity_type === 'journal');
     const checkmarkStreaks = streaks.filter(s => s.activity_type !== 'journal');
+    const daysInRecovery = recoveryDate
+        ? Math.floor((Date.now() - new Date(recoveryDate).getTime()) / (1000 * 60 * 60 * 24))
+        : 0;
 
     return (
         <div className="container-fluid px-3 px-md-4">
@@ -69,6 +81,26 @@ export default function Insights() {
             <hr className="mb-4 mt-1" />
 
             <div className="row g-4">
+                {/* Recovery Streak Section */}
+                {recoveryDate && (
+                    <div className="col-12">
+                        <div className={`card ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}>
+                            <div className="card-body">
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 className="h5 mb-0">Recovery Streak</h3>
+                                        <p className="text-muted mb-0">Since {new Date(recoveryDate).toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="text-end">
+                                        <h2 className="mb-0 display-5 fw-bold text-success">{daysInRecovery}</h2>
+                                        <span className="text-muted">days</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Current Streaks Section */}
                 <div className="col-12 col-md-6">
                     <h2 className="h4 mb-3">Current Streaks</h2>

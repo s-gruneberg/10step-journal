@@ -6,12 +6,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, QuestionSerializer, UserQuestionsSerializer, StreakSerializer
+from .serializers import (
+    UserSerializer, 
+    QuestionSerializer, 
+    UserQuestionsSerializer, 
+    StreakSerializer,
+    UserSettingsSerializer
+)
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime, timedelta
-from .models import Question, UserQuestions, Streak
+from .models import Question, UserQuestions, Streak, UserSettings
 from rest_framework.decorators import action
 import logging
 import pytz
@@ -171,3 +177,67 @@ class StreakViewSet(viewsets.ModelViewSet):
         elif streak.last_entry_date < yesterday:
             streak.current_streak = 0
             streak.save()
+
+class UserSettingsViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSettingsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserSettings.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        settings, created = UserSettings.objects.get_or_create(user=request.user)
+        serializer = self.get_serializer(settings)
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        # Update or create
+        settings, created = UserSettings.objects.get_or_create(user=self.request.user)
+        serializer.update(settings, serializer.validated_data)
+
+class AccountManagementView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """Handle password reset for authenticated users"""
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not old_password or not new_password:
+            return Response(
+                {"detail": "Both old and new passwords are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = request.user
+        if not user.check_password(old_password):
+            return Response(
+                {"detail": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user.set_password(new_password)
+            user.save()
+            return Response({"detail": "Password updated successfully."})
+        except Exception as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def delete(self, request):
+        """Delete user account and all associated data"""
+        try:
+            user = request.user
+            # This will cascade delete all related data due to our model relationships
+            user.delete()
+            return Response(
+                {"detail": "Account and all associated data deleted successfully."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"detail": f"Failed to delete account: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )

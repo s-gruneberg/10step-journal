@@ -16,12 +16,21 @@ interface Streak {
 }
 
 class ApiService {
-    private getHeaders(): HeadersInit {
+    private baseUrl: string;
+    private headers: HeadersInit;
+
+    constructor() {
+        this.baseUrl = 'http://localhost:8000';
+        this.headers = {
+            'Content-Type': 'application/json',
+        };
+    }
+
+    private getAuthHeaders(): HeadersInit {
         const token = localStorage.getItem('accessToken');
         return {
-            'Content-Type': 'application/json',
-            'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            ...this.headers,
+            'Authorization': `Bearer ${token}`,
         };
     }
 
@@ -36,7 +45,7 @@ class ApiService {
     // User Questions API
     async getUserQuestions(): Promise<UserQuestions> {
         const response = await fetch(`${API_BASE_URL}/api/user-questions/`, {
-            headers: this.getHeaders()
+            headers: this.getAuthHeaders()
         });
         return this.handleResponse<UserQuestions>(response);
     }
@@ -44,7 +53,7 @@ class ApiService {
     async saveUserQuestions(data: Partial<UserQuestions>): Promise<UserQuestions> {
         const response = await fetch(`${API_BASE_URL}/api/user-questions/`, {
             method: 'POST',
-            headers: this.getHeaders(),
+            headers: this.getAuthHeaders(),
             body: JSON.stringify(data)
         });
         return this.handleResponse<UserQuestions>(response);
@@ -53,14 +62,14 @@ class ApiService {
     // Streaks API
     async getStreaks(): Promise<Streak[]> {
         const response = await fetch(`${API_BASE_URL}/api/streaks/`, {
-            headers: this.getHeaders()
+            headers: this.getAuthHeaders()
         });
         return this.handleResponse<Streak[]>(response);
     }
 
     async getCurrentStreaks(): Promise<Streak[]> {
         const response = await fetch(`${API_BASE_URL}/api/streaks/current/`, {
-            headers: this.getHeaders()
+            headers: this.getAuthHeaders()
         });
         return this.handleResponse<Streak[]>(response);
     }
@@ -72,10 +81,59 @@ class ApiService {
     }): Promise<Streak[]> {
         const response = await fetch(`${API_BASE_URL}/api/streaks/update_streak/`, {
             method: 'POST',
-            headers: this.getHeaders(),
+            headers: this.getAuthHeaders(),
             body: JSON.stringify(data)
         });
         return this.handleResponse<Streak[]>(response);
+    }
+
+    async getUserSettings() {
+        const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch user settings');
+        }
+        return response.json();
+    }
+
+    async updateUserSettings(settings: { recovery_date: string }) {
+        const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(settings),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update user settings');
+        }
+        return response.json();
+    }
+
+    async updatePassword(oldPassword: string, newPassword: string) {
+        const response = await fetch(`${this.baseUrl}/auth/account/`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify({
+                old_password: oldPassword,
+                new_password: newPassword,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update password');
+        }
+        return response.json();
+    }
+
+    async deleteAccount() {
+        const response = await fetch(`${this.baseUrl}/auth/account/`, {
+            method: 'DELETE',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete account');
+        }
+        return response.json();
     }
 }
 

@@ -45,3 +45,14 @@ class Streak(models.Model):
         ]
         verbose_name = 'Streak'
         verbose_name_plural = 'Streaks'
+
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
+    recovery_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'User Settings'
+        verbose_name_plural = 'User Settings'

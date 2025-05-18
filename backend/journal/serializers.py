@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Question, UserQuestions, Streak
+from .models import Question, UserQuestions, Streak, UserSettings
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
@@ -83,4 +83,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = ['recovery_date']
+        read_only_fields = ['created_at', 'updated_at']
 
