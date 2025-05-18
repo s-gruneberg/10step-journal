@@ -68,28 +68,50 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
         user_tz = request.headers.get('X-Timezone', 'UTC')
         try:
             # Validate the timezone
-            pytz.timezone(user_tz)
+            user_timezone = pytz.timezone(user_tz)
         except pytz.exceptions.UnknownTimeZoneError:
-            user_tz = 'UTC'
+            user_timezone = pytz.UTC
 
         try:
             # Convert the date to user's timezone for consistency
             date = request.data.get('date')
-            if date:
-                user_timezone = pytz.timezone(user_tz)
-                date_obj = datetime.strptime(date, '%Y-%m-%d')
-                date_obj = user_timezone.localize(date_obj)
-                # Store the date in UTC
-                utc_date = date_obj.astimezone(pytz.UTC).date()
-                request.data['date'] = utc_date.isoformat()
+            if not date:
+                return Response(
+                    {"detail": "Date is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-            return super().create(request, *args, **kwargs)
-        except Exception as e:
-            if 'duplicate key' in str(e).lower():
+            # Parse the date in user's timezone
+            date_obj = datetime.strptime(date, '%Y-%m-%d')
+            date_obj = user_timezone.localize(date_obj)
+            
+            # Get the date range for the user's calendar day
+            start_of_day = date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_day = start_of_day + timedelta(days=1)
+
+            # Convert to UTC for database query
+            utc_start = start_of_day.astimezone(pytz.UTC)
+            utc_end = end_of_day.astimezone(pytz.UTC)
+
+            # Check for existing entries in the user's calendar day
+            existing_entry = JournalEntry.objects.filter(
+                user=request.user,
+                created_at__gte=utc_start,
+                created_at__lt=utc_end
+            ).first()
+
+            if existing_entry:
                 return Response(
                     {"detail": "You have already saved a journal entry for this date."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            # Store the date in UTC
+            request.data['date'] = date_obj.astimezone(pytz.UTC).date().isoformat()
+            return super().create(request, *args, **kwargs)
+
+        except Exception as e:
+            logger.error(f"Error creating journal entry: {str(e)}")
             return Response(
                 {"detail": f"Failed to create journal entry: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

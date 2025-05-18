@@ -60,7 +60,12 @@ export default function Inventory() {
 
             // Get current checkmark states
             const checkmarkStates = getCheckmarkStates();
-            const today = new Date().toISOString().split('T')[0];
+
+            // Get today's date in user's local timezone
+            const now = new Date();
+            const today = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0');
 
             const saveData = {
                 date: today,
@@ -68,7 +73,7 @@ export default function Inventory() {
                 checkmarks: checkmarkStates
             };
 
-            // Save to backend
+            // Add timezone header for backend
             await apiService.saveJournalEntry(saveData);
         } catch (error) {
             console.error('Failed to save journal entry:', error);
