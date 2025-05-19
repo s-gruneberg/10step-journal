@@ -4,7 +4,7 @@ import { defaultQuestions, defaultCheckmarks } from '../localStorageUtils';
 import { apiService } from '../services/api';
 import { AuthService } from '../services/auth';
 
-const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8080';
 const APP_NAMESPACE = '10StepJournal';
 
 interface AuthContextType {
