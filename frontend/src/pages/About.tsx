@@ -9,7 +9,7 @@ export default function About() {
         <div className="container mt-4">
             <h1 className="mb-2">About</h1>
             <hr className="mb-5 mt-0" />
-            <p>This journaling app helps you reflect on your by taking a personal inventory as described in the 10th step of Alcoholics Anonymous Hi izzurd.</p>
+            <p>This journaling app helps you reflect on your day by taking a personal inventory as described in the 10th step of Alcoholics Anonymous.</p>
 
             <h2 className="h3 mb-4 mt-5">Frequently Asked Questions</h2>
             <style>

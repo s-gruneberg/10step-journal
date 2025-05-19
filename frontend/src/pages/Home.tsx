@@ -30,7 +30,7 @@ const Home = () => {
 
       {!isAuthenticated && (
         <div className="mt-5 pt-4 border-top">
-          <h2 className="h4 mb-3">Want to keep track of your use streaks and save custom questions?</h2>
+          <h2 className="h4 mb-3">Account creation coming soon!</h2>
           <div className="d-flex align-items-center">
             <Link to="/register" className={primaryButtonClass}>
               Register
@@ -40,9 +40,6 @@ const Home = () => {
               Login
             </Link>
           </div>
-          <p className="text-muted mt-3">
-            Creating an account lets you track your progress and customize your journal experience.
-          </p>
         </div>
       )}
     </div>
