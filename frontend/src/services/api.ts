@@ -14,6 +14,10 @@ interface Streak {
     answers: Record<number, string>;
 }
 
+interface UserSettings {
+    recovery_date: string | null;
+}
+
 class ApiService {
     private baseUrl: string;
     private headers: HeadersInit;
@@ -119,12 +123,12 @@ class ApiService {
         return this.handleResponse<Streak[]>(response);
     }
 
-    async getUserSettings() {
+    async getUserSettings(): Promise<UserSettings> {
         const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
             method: 'GET',
             headers: await this.getAuthHeaders(),
         });
-        return this.handleResponse(response);
+        return this.handleResponse<UserSettings>(response);
     }
 
     async updateUserSettings(settings: { recovery_date: string }) {

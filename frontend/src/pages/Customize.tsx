@@ -3,11 +3,7 @@ import { useDarkMode } from '../context/DarkModeContext'
 import {
     getQuestions,
     restoreDefaultQuestions,
-    addQuestion,
-    removeQuestion,
     getCheckmarks,
-    addCheckmark,
-    removeCheckmark,
     restoreDefaultCheckmarks,
     setQuestions,
     setCheckmarks

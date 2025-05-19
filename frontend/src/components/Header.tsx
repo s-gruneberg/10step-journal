@@ -8,7 +8,7 @@ import './Header.css'
 const Header = () => {
     const { darkMode } = useDarkMode()
     const [expanded, setExpanded] = useState(false)
-    const { isAuthenticated, user, logout } = useAuth()
+    const { isAuthenticated, logout } = useAuth()
     const navigate = useNavigate()
 
     const handleLogout = () => {

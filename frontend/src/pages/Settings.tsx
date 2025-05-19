@@ -6,13 +6,9 @@ import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 
-interface UserSettings {
-    recovery_date: string | null;
-}
-
 const Settings = () => {
     const { darkMode, toggleDarkMode } = useDarkMode()
-    const { isAuthenticated, user } = useAuth()
+    const { isAuthenticated } = useAuth()
     const [recoveryDate, setRecoveryDate] = useState<string>('')
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [showPasswordModal, setShowPasswordModal] = useState(false)

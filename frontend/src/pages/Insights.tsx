@@ -11,10 +11,9 @@ interface Streak {
     current_streak: number;
     longest_streak: number;
     last_entry_date: string;
-}
-
-interface UserSettings {
-    recovery_date: string | null;
+    date?: string;
+    checkmarks?: Record<string, boolean>;
+    answers?: Record<number, string>;
 }
 
 export default function Insights() {
@@ -30,7 +29,7 @@ export default function Insights() {
             try {
                 // Get streaks from API
                 const streaksData = await apiService.getStreaks();
-                setStreaks(streaksData);
+                setStreaks(streaksData as Streak[]);
 
                 // Get user settings for recovery date
                 const settings = await apiService.getUserSettings();
