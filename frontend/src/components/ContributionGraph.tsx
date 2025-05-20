@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDarkMode } from '../context/DarkModeContext';
+// TODO: need to have streaks make api call to backend to get streak data, and use that to populate the data
 
 interface Streak {
     activity_type: string;

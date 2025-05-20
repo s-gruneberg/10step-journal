@@ -143,7 +143,7 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    {/* Color Blind Mode
+                    Color Blind Mode
                     <div className="mb-3">
                         <Form.Check
                             type="switch"
@@ -155,7 +155,7 @@ const Settings = () => {
                         <small className="text-muted d-block mt-1">
                             Enhances contrast and uses color-blind friendly color combinations
                         </small>
-                    </div> */}
+                    </div>
                 </div>
             </div>
 
