@@ -207,12 +207,12 @@ export default function Inventory() {
                         onClick={handleSave}
                         disabled={isSaving}
                     >
-                        {isSaving ? 'Saving...' : 'Save'}
+                        {isSaving ? 'Saving...' : 'Complete'}
                     </button>
                 )}
                 {!isAuthenticated && (
-                    <div className="text-muted">
-                        <small>Sign in to save your entries</small>
+                    <div className="text-body-secondary">
+                        <small>Sign in to keep track of usage streaks</small>
                     </div>
                 )}
             </div>

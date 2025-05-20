@@ -1,7 +1,7 @@
 // pages/About.tsx
 import Accordion from 'react-bootstrap/Accordion';
-import { useDarkMode } from '../context/DarkModeContext';
-
+import { useDarkMode } from '../context/DarkModeContext'
+import "./about.css"
 export default function About() {
     const { darkMode } = useDarkMode();
 

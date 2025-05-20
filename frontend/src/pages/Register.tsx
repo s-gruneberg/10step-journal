@@ -29,7 +29,7 @@ export default function Register() {
                 <div className="col-md-6 col-lg-4">
                     <div className={`card ${darkMode ? 'bg-dark text-light' : ''} mt-5`}>
                         <div className="card-body">
-                            <h2 className="text-center mb-4">Register</h2>
+                            <h2 className="text-center mb-4">Registration coming soon!</h2>
                             {error && (
                                 <div className="alert alert-danger" role="alert">
                                     {error}
