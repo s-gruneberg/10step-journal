@@ -120,10 +120,11 @@ export function getCheckmarkStates(): Record<string, boolean> {
     const stored = localStorage.getItem(getNamespacedKey('CheckmarkStates'));
     if (!stored) return {};
     try {
-        // only return the checkmark states that are true
-        const parsed = JSON.parse(stored);
-        const filtered = Object.fromEntries(Object.entries(parsed).filter(([_, value]) => value));
-        return filtered;
+        const parsed = JSON.parse(stored) as Record<string, boolean>;
+        // Only return checkmarks that are explicitly true
+        return Object.fromEntries(
+            Object.entries(parsed).filter(([_, value]) => value === true)
+        );
     } catch {
         return {};
     }
