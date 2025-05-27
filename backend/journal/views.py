@@ -11,13 +11,14 @@ from .serializers import (
     QuestionSerializer, 
     UserQuestionsSerializer, 
     StreakSerializer,
-    UserSettingsSerializer
+    UserSettingsSerializer,
+    UserUsageSerializer
 )
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime, timedelta
-from .models import Question, UserQuestions, Streak, UserSettings
+from .models import Question, UserQuestions, Streak, UserSettings, UserUsage
 from rest_framework.decorators import action
 import logging
 import pytz
@@ -240,4 +241,51 @@ class AccountManagementView(APIView):
             return Response(
                 {"detail": f"Failed to delete account: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+
+class UserUsageViewSet(viewsets.ModelViewSet):
+    serializer_class = UserUsageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserUsage.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        """Get or create user usage data"""
+        usage, created = UserUsage.objects.get_or_create(user=request.user)
+        serializer = self.get_serializer(usage)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['post'])
+    def add_date(self, request):
+        """Add today's date to the user's usage"""
+        try:
+            # Get user's timezone from request headers
+            user_tz = request.headers.get('X-Timezone', 'UTC')
+            try:
+                user_timezone = pytz.timezone(user_tz)
+            except pytz.exceptions.UnknownTimeZoneError:
+                user_timezone = pytz.UTC
+
+            # Get today's date in user's timezone
+            today = timezone.now().astimezone(user_timezone).date()
+            date_str = today.isoformat()
+
+            # Get or create user usage
+            usage, created = UserUsage.objects.get_or_create(user=request.user)
+            
+            # Add date if not already present
+            if date_str not in usage.dates:
+                usage.dates.append(date_str)
+                usage.dates.sort()  # Keep dates sorted
+                usage.save()
+
+            serializer = self.get_serializer(usage)
+            return Response(serializer.data)
+
+        except Exception as e:
+            logger.error(f"Error adding date to usage: {str(e)}")
+            return Response(
+                {"detail": f"Failed to add date: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

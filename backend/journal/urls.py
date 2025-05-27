@@ -14,7 +14,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 router = DefaultRouter()
 router.register(r'user-questions', views.UserQuestionsViewSet, basename='user-questions')
 router.register(r'streaks', views.StreakViewSet, basename='streaks')
-router.register(r'user-settings', views.UserSettingsViewSet, basename='user-settings')
+router.register(r'settings', views.UserSettingsViewSet, basename='user-settings')
+router.register(r'usage', views.UserUsageViewSet, basename='user-usage')
 
 # Define URL patterns
 urlpatterns = [

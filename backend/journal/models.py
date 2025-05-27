@@ -56,3 +56,17 @@ class UserSettings(models.Model):
     class Meta:
         verbose_name = 'User Settings'
         verbose_name_plural = 'User Settings'
+
+
+class UserUsage(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='usage')
+    dates = models.JSONField(default=list)  # List of dates when the user completed a journal entry
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'User Usage'
+        verbose_name_plural = 'User Usage'
+
+    def __str__(self):
+        return f"{self.user.username}'s usage"
