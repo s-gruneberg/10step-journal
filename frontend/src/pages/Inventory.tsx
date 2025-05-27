@@ -75,6 +75,9 @@ export default function Inventory() {
                     answers: answersObj
                 });
 
+                // Add today's date to usage
+                await apiService.addUsageDate();
+
                 // Save answers locally
                 saveAnswers(answersObj);
             } catch (error: any) {

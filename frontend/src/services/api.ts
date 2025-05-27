@@ -8,6 +8,10 @@ interface UserQuestions {
     updated_at: string;
 }
 
+interface UserUsage {
+    dates: string[];
+}
+
 interface Streak {
     date: string;
     checkmarks: Record<string, boolean>;
@@ -124,7 +128,7 @@ class ApiService {
     }
 
     async getUserSettings(): Promise<UserSettings> {
-        const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
+        const response = await fetch(`${this.baseUrl}/api/settings/`, {
             method: 'GET',
             headers: await this.getAuthHeaders(),
         });
@@ -132,7 +136,7 @@ class ApiService {
     }
 
     async updateUserSettings(settings: { recovery_date: string }) {
-        const response = await fetch(`${this.baseUrl}/api/user-settings/`, {
+        const response = await fetch(`${this.baseUrl}/api/settings/`, {
             method: 'POST',
             headers: await this.getAuthHeaders(),
             body: JSON.stringify(settings),
@@ -158,6 +162,23 @@ class ApiService {
             headers: await this.getAuthHeaders(),
         });
         return this.handleResponse(response);
+    }
+
+    // Usage API
+    async getUserUsage(): Promise<UserUsage> {
+        const response = await fetch(`${this.baseUrl}/api/usage/`, {
+            headers: await this.getAuthHeaders()
+        });
+        return this.handleResponse<UserUsage>(response);
+    }
+
+    async addUsageDate(): Promise<UserUsage> {
+        const response = await fetch(`${this.baseUrl}/api/usage/add_date/`, {
+            method: 'POST',
+            headers: await this.getAuthHeaders(),
+            body: JSON.stringify({})
+        });
+        return this.handleResponse<UserUsage>(response);
     }
 }
 

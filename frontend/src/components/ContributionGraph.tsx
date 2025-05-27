@@ -1,17 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDarkMode } from '../context/DarkModeContext';
-// TODO: need to have streaks make api call to backend to get streak data, and use that to populate the data
+import { apiService } from '../services/api';
 
-interface Streak {
-    activity_type: string;
-    streak_type: string;
-    current_streak: number;
-    longest_streak: number;
-    last_entry_date: string;
+interface UserUsage {
+    dates: string[];
 }
 
 interface ContributionGraphProps {
-    streaks: Streak[];
+    streaks: any[]; // Keep for backward compatibility
 }
 
 interface CalendarDay {
@@ -43,6 +39,20 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
         y: 0,
         date: null
     });
+    const [usage, setUsage] = useState<UserUsage | null>(null);
+
+    // Fetch usage data
+    useEffect(() => {
+        const fetchUsage = async () => {
+            try {
+                const data = await apiService.getUserUsage();
+                setUsage(data);
+            } catch (error) {
+                console.error('Failed to fetch usage data:', error);
+            }
+        };
+        fetchUsage();
+    }, []);
 
     // Handle resize events
     useEffect(() => {
@@ -62,10 +72,8 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(today.getMonth() - 6);
 
-    // Create a map of dates with entries
-    const entryMap = new Map(
-        streaks.map(streak => [streak.last_entry_date, streak])
-    );
+    // Create a set of dates with entries
+    const entryDates = new Set(usage?.dates || []);
 
     // Generate calendar data
     const calendar: CalendarDay[] = [];
@@ -74,7 +82,7 @@ export default function ContributionGraph({ streaks }: ContributionGraphProps) {
 
     while (currentDate <= today) {
         const dateStr = currentDate.toISOString().split('T')[0];
-        const hasEntry = entryMap.has(dateStr);
+        const hasEntry = entryDates.has(dateStr);
 
         calendar.push({
             date: new Date(currentDate),

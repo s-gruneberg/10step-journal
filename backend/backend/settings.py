@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'journal',
     'corsheaders',
+    'django_extensions',
 ]
 
 REST_FRAMEWORK = {
@@ -63,11 +64,18 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
 ]
+
+# For development only - remove in production
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Additional CORS settings
 CORS_ALLOW_CREDENTIALS = True
