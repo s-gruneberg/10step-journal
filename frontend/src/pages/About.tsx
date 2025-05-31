@@ -40,11 +40,11 @@ export default function About() {
                         Is this site affiliated with Alcoholics Anonymous?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        No. This site is not affiliated with Alcoholics Anonymous or any other 12-step program. 
+                        No. This site is not affiliated with Alcoholics Anonymous or any other 12-step program.
                         It is a personal project created to help people in recovery.
                         <br />
                         <br />
-                        I (the creator) am a member of Alcoholics Anonymous and wanted to create a tool that 
+                        I (the creator) am a member of Alcoholics Anonymous and wanted to create a tool that
                         could help others in recovery.
                     </Accordion.Body>
                 </Accordion.Item>
@@ -56,7 +56,7 @@ export default function About() {
                         Is this site free?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        Yes. This site is free to use and always will be.
+                        Yes. This site is free to use and generates no revenue through ads or other means.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -67,14 +67,10 @@ export default function About() {
                         Is my data safe?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        If you don't have an account, no data ever leaves your device.
-                        <br />
-                        <br />
-                        If you have an account, your custom questions and information about your streaks
-                        are stored in an industry standard secure way.
-                        </Accordion.Body>
+                        No data ever leaves your device.
+                    </Accordion.Body>
                 </Accordion.Item>
-                <Accordion.Item
+                {/* <Accordion.Item
                     eventKey="7"
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}
                 >
@@ -82,31 +78,30 @@ export default function About() {
                         Do I have to create an account to use this site?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        No. You can use this site without creating an account. 
+                        No. You can use this site without creating an account.
                         <br />
                         <br />
                         However, if you create an account, you can
                         track your daily activity streaks and your total days in recovery on the Insights page.
                     </Accordion.Body>
-                </Accordion.Item>
+                </Accordion.Item> */}
                 <Accordion.Item
                     eventKey="3"
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}
                 >
                     <Accordion.Header>
-                        Are my answers to the questions kept private?
+                        Are my answers kept private?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
                         Yes.
                         <br />
                         <br />
-                        Your answers are temporarily stored in your browser's session storage, 
-                        which means that they will be lost if you close your broswer tab or 
-                        clear browsing data. 
+                        Your answers are temporarily stored in your browser's session storage,
+                        which means that they will be lost if you close your broswer tab or
+                        clear browsing data.
                         <br />
                         <br />
-                        The answers your write to the questions never leave your device. 
-                        This is true even if you have an account and are logged in.
+                        The answers your write to the questions never leave your device.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -114,16 +109,16 @@ export default function About() {
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}
                 >
                     <Accordion.Header>
-                        How do my custom questions get remembered even if I don't have an account?
+                        How do my custom questions get remembered?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        The way this works is that the questions are stored on your device's browser in something called localStorage. 
+                        The way this works is that the questions are stored on your device's browser in something called localStorage.
                         <br />
                         Purging your browser history, browser cache etc will likely delete this information. It's stored locally on
                         your browser and is not uploaded anywhere.
                     </Accordion.Body>
                 </Accordion.Item>
-               
+
                 <Accordion.Item
                     eventKey="6"
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}

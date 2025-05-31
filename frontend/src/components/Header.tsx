@@ -56,6 +56,11 @@ const Header = () => {
                                 Inventory
                             </NavLink>
                         </li>
+                        <li className="nav-item">
+                            <NavLink to="/customize" className="nav-link" onClick={() => setExpanded(false)}>
+                                Customize
+                            </NavLink>
+                        </li>
                         {isAuthenticated && (
                             <li className="nav-item">
                                 <NavLink to="/insights" className="nav-link" onClick={() => setExpanded(false)}>
@@ -73,7 +78,7 @@ const Header = () => {
                                 Settings
                             </NavLink>
                         </li>
-                        {isAuthenticated ? (
+                        {isAuthenticated && (
                             <li className="nav-item">
                                 <button
                                     className="btn btn-link nav-link"
@@ -81,12 +86,6 @@ const Header = () => {
                                 >
                                     Logout
                                 </button>
-                            </li>
-                        ) : (
-                            <li className="nav-item">
-                                <NavLink to="/login" className="nav-link" onClick={() => setExpanded(false)}>
-                                    Login
-                                </NavLink>
                             </li>
                         )}
                     </ul>

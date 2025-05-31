@@ -18,7 +18,6 @@ const Settings = () => {
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
     const [fontSize, setFontSize] = useState(localStorage.getItem('fontSize') || '16')
-    const [colorBlindMode, setColorBlindMode] = useState(localStorage.getItem('colorBlindMode') === 'true')
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -43,13 +42,6 @@ const Settings = () => {
         setFontSize(size);
         localStorage.setItem('fontSize', size);
         document.documentElement.style.fontSize = `${size}px`;
-    };
-
-    const handleColorBlindModeChange = (enabled: boolean) => {
-        setColorBlindMode(enabled);
-        localStorage.setItem('colorBlindMode', enabled.toString());
-        // Apply color blind friendly classes to body
-        document.body.classList.toggle('color-blind-mode', enabled);
     };
 
     const handleRecoveryDateChange = async (date: string) => {
@@ -142,20 +134,6 @@ const Settings = () => {
                             <span className="badge bg-secondary">{fontSize}px</span>
                         </div>
                     </div>
-
-                    Color Blind Mode
-                    <div className="mb-3">
-                        <Form.Check
-                            type="switch"
-                            id="color-blind-mode"
-                            label="Color Blind Mode"
-                            checked={colorBlindMode}
-                            onChange={(e) => handleColorBlindModeChange(e.target.checked)}
-                        />
-                        <small className="text-muted d-block mt-1">
-                            Enhances contrast and uses color-blind friendly color combinations
-                        </small>
-                    </div>
                 </div>
             </div>
 
@@ -199,73 +177,73 @@ const Settings = () => {
                             </div>
                         </div>
                     </div>
-
-
                 </>
             ) : (
+                /* Temporarily commented out login banner
                 <div className="alert alert-info">
                     Please <a href="/login" className="alert-link">log in</a> to access additional settings.
                 </div>
+                */
+                null
             )}
+
+            {/* Password Change Modal */}
+            <Modal show={showPasswordModal} onHide={() => setShowPasswordModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Change Password</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Current Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={oldPassword}
+                                onChange={(e) => setOldPassword(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>New Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Confirm New Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowPasswordModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handlePasswordChange}>
+                        Change Password
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             {/* Delete Account Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-                <Modal.Header closeButton className={darkMode ? 'bg-dark text-light' : ''}>
+                <Modal.Header closeButton>
                     <Modal.Title>Delete Account</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                    Are you sure you want to delete your account? This will erase all your data and cannot be undone.
+                <Modal.Body>
+                    Are you sure you want to delete your account? This action cannot be undone.
                 </Modal.Body>
-                <Modal.Footer className={darkMode ? 'bg-dark text-light' : ''}>
+                <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
                         Cancel
                     </Button>
                     <Button variant="danger" onClick={handleDeleteAccount}>
                         Delete Account
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
-            {/* Password Reset Modal */}
-            <Modal show={showPasswordModal} onHide={() => setShowPasswordModal(false)}>
-                <Modal.Header closeButton className={darkMode ? 'bg-dark text-light' : ''}>
-                    <Modal.Title>Reset Password</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                    <div className="mb-3">
-                        <label className="form-label">Current Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            value={oldPassword}
-                            onChange={(e) => setOldPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">New Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label className="form-label">Confirm New Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                    </div>
-                </Modal.Body>
-                <Modal.Footer className={darkMode ? 'bg-dark text-light' : ''}>
-                    <Button variant="secondary" onClick={() => setShowPasswordModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" onClick={handlePasswordChange}>
-                        Update Password
                     </Button>
                 </Modal.Footer>
             </Modal>

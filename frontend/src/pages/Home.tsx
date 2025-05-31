@@ -7,7 +7,6 @@ const Home = () => {
   const { darkMode } = useDarkMode()
   const { isAuthenticated } = useAuth()
   const primaryButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} btn-lg`
-  const secondaryButtonClass = `btn ${darkMode ? 'btn-secondary' : 'btn-outline-secondary'} ms-3`
 
   return (
     <div className="container mt-4">
@@ -27,21 +26,6 @@ const Home = () => {
           Go to Inventory
         </Link>
       </div>
-
-      {!isAuthenticated && (
-        <div className="mt-5 pt-4 border-top">
-          <h2 className="h4 mb-3">Account creation coming soon!</h2>
-          <div className="d-flex align-items-center">
-            <Link to="/register" className={primaryButtonClass}>
-              Register
-            </Link>
-            <span className="mx-3">or</span>
-            <Link to="/login" className={secondaryButtonClass}>
-              Login
-            </Link>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

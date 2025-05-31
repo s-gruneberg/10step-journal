@@ -213,11 +213,11 @@ export default function Inventory() {
                         {isSaving ? 'Saving...' : 'Complete'}
                     </button>
                 )}
-                {!isAuthenticated && (
+                {/* {!isAuthenticated && (
                     <div className="text-body-secondary">
                         <small>Sign in to keep track of usage streaks</small>
                     </div>
-                )}
+                )} */}
             </div>
 
             {/* Duplicate Entry Modal */}
