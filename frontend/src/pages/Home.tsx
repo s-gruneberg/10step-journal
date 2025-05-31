@@ -15,8 +15,9 @@ const Home = () => {
         This site helps you complete your daily 10th Step inventory.
       </p>
       <ul className="lead">
-        <li>You can customize the inventory questions.</li>
-        <li>Accounts are not required, there is no data collection, and there are no ads.</li>
+        <li>The inventory questions are customizable to your liking. </li>
+        <li>  The default questions are modeled after page 86 of the AA Big Book (4th edition)</li>
+        <li>There are no ads, account requirements, or data collection</li>
       </ul>
 
       <div className="mt-4">
