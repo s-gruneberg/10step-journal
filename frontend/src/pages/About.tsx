@@ -70,21 +70,17 @@ export default function About() {
                         No data ever leaves your device.
                     </Accordion.Body>
                 </Accordion.Item>
-                {/* <Accordion.Item
+                <Accordion.Item
                     eventKey="7"
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}
                 >
                     <Accordion.Header>
-                        Do I have to create an account to use this site?
+                        Where are the default questions from?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        No. You can use this site without creating an account.
-                        <br />
-                        <br />
-                        However, if you create an account, you can
-                        track your daily activity streaks and your total days in recovery on the Insights page.
+                        The default questions are modeled after page 86 of the AA Big Book (4th edition).
                     </Accordion.Body>
-                </Accordion.Item> */}
+                </Accordion.Item>
                 <Accordion.Item
                     eventKey="3"
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}

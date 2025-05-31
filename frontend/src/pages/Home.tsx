@@ -16,7 +16,6 @@ const Home = () => {
       </p>
       <ul className="lead">
         <li>The inventory questions are customizable to your liking. </li>
-        <li>  The default questions are modeled after page 86 of the AA Big Book (4th edition)</li>
         <li>There are no ads, account requirements, or data collection</li>
       </ul>
 
