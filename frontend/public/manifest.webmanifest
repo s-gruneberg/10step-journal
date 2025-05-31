@@ -1,56 +1,20 @@
 {
     "name": "10th Step Journal",
-    "short_name": "10Step",
+    "short_name": "10th Step",
     "start_url": "/",
     "display": "standalone",
     "icons": [
         {
-            "src": "/logo114.png",
-            "sizes": "114x114",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "/logo114.png",
-            "sizes": "114x114",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
             "src": "/logo192.png",
             "sizes": "192x192",
             "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "/logo192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/logo256.png",
-            "sizes": "256x256",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "/logo256.png",
-            "sizes": "256x256",
-            "type": "image/png",
-            "purpose": "maskable"
+            "purpose": "any maskable"
         },
         {
             "src": "/logo512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "/logo512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
+            "purpose": "any maskable"
         }
     ],
     "background_color": "#000000",
