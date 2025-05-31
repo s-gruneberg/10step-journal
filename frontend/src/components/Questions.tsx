@@ -36,33 +36,15 @@ const Questions = ({ questions, answers, onAnswerChange, onClear }: QuestionsPro
 
     return (
         <>
-            <h2 className="h4 mb-3">Daily Activities</h2>
-            <div className="d-flex justify-content-between align-items-start mb-4">
-                <div className="d-flex flex-wrap gap-4" style={{ flex: '1 1 auto' }}>
-                    {checkmarks.map((checkmark) => (
-                        <div key={checkmark} className="form-check">
-                            <input
-                                type="checkbox"
-                                className="form-check-input"
-                                id={`checkmark-${checkmark}`}
-                                checked={checkmarkStates[checkmark] || false}
-                                onChange={(e) => handleCheckmarkChange(checkmark, e.target.checked)}
-                            />
-                            <label className="form-check-label text-capitalize" htmlFor={`checkmark-${checkmark}`}>
-                                {checkmark}
-                            </label>
-                        </div>
-                    ))}
-                </div>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="h4 mb-0">Inventory Questions</h2>
                 <button
-                    className={`btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'} ms-3`}
+                    className={`btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'}`}
                     onClick={handleClearAll}
                 >
                     Clear All
                 </button>
             </div>
-
-            <h2 className="h4 mb-3">Inventory Questions</h2>
             {questions.map((q, i) => (
                 <div key={i} className="mb-4">
                     <label className="form-label fw-bold text-wrap d-block text-break">{q}</label>
@@ -75,6 +57,30 @@ const Questions = ({ questions, answers, onAnswerChange, onClear }: QuestionsPro
                     />
                 </div>
             ))}
+
+            {checkmarks.length > 0 && (
+                <>
+                    <h2 className="h4 mb-3">Daily Activities</h2>
+                    <div className="d-flex justify-content-between align-items-start mb-4">
+                        <div className="d-flex flex-wrap gap-4" style={{ flex: '1 1 auto' }}>
+                            {checkmarks.map((checkmark) => (
+                                <div key={checkmark} className="form-check">
+                                    <input
+                                        type="checkbox"
+                                        className="form-check-input"
+                                        id={`checkmark-${checkmark}`}
+                                        checked={checkmarkStates[checkmark] || false}
+                                        onChange={(e) => handleCheckmarkChange(checkmark, e.target.checked)}
+                                    />
+                                    <label className="form-check-label text-capitalize" htmlFor={`checkmark-${checkmark}`}>
+                                        {checkmark}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            )}
         </>
     )
 }
