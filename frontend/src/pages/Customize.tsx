@@ -180,64 +180,6 @@ export default function CustomizeQuestions() {
                     </div>
                 )}
 
-                <h2 className="h4 mb-3">Daily Activities <small className="text-muted">({tempCheckmarks.length}/{MAX_CHECKMARKS})</small></h2>
-                <div className="mb-4">
-                    <label htmlFor="newCheckmark" className="form-label"><strong>Add New Activity</strong></label>
-                    <div className="d-flex">
-                        <input
-                            id="newCheckmark"
-                            type="text"
-                            className={`form-control me-2 ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-light'}`}
-                            value={newCheckmark}
-                            onChange={(e) => setNewCheckmark(e.target.value)}
-                            placeholder="Enter a new daily activity"
-                            disabled={tempCheckmarks.length >= MAX_CHECKMARKS}
-                        />
-                        <button
-                            type="button"
-                            className={addButtonClass}
-                            onClick={handleAddCheckmark}
-                            disabled={tempCheckmarks.length >= MAX_CHECKMARKS}
-                        >
-                            Add
-                        </button>
-                    </div>
-                </div>
-
-                <Droppable droppableId="checkmarks" type="checkmark">
-                    {(provided) => (
-                        <ul className="list-group mb-4" {...provided.droppableProps} ref={provided.innerRef}>
-                            {tempCheckmarks.map((checkmark, index) => (
-                                <Draggable key={`checkmark-${index}`} draggableId={`checkmark-${index}`} index={index}>
-                                    {(provided, snapshot) => (
-                                        <li
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-dark text-light border-secondary' : ''} ${snapshot.isDragging ? 'dragging' : ''}`}
-                                        >
-                                            <div className="d-flex align-items-center flex-grow-1">
-                                                <div
-                                                    {...provided.dragHandleProps}
-                                                    className="drag-handle"
-                                                >
-                                                    <i className="bi bi-grip-vertical"></i>
-                                                </div>
-                                                <div className="text-break text-capitalize">
-                                                    {checkmark}
-                                                </div>
-                                            </div>
-                                            <button className={deleteButtonClass} onClick={() => handleRemoveCheckmark(checkmark)}>
-                                                X
-                                            </button>
-                                        </li>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </ul>
-                    )}
-                </Droppable>
-
                 <h2 className="h4 mb-3">Inventory Questions <small className="text-muted">({tempQuestions.length}/{MAX_QUESTIONS})</small></h2>
                 <div className="mb-4">
                     <label htmlFor="newQuestion" className="form-label"><strong>Add New Question</strong></label>
@@ -285,6 +227,64 @@ export default function CustomizeQuestions() {
                                                 </div>
                                             </div>
                                             <button className={deleteButtonClass} onClick={() => handleRemoveQuestion(question)}>
+                                                X
+                                            </button>
+                                        </li>
+                                    )}
+                                </Draggable>
+                            ))}
+                            {provided.placeholder}
+                        </ul>
+                    )}
+                </Droppable>
+
+                <h2 className="h4 mb-3">Daily Activities <small className="text-muted">({tempCheckmarks.length}/{MAX_CHECKMARKS})</small></h2>
+                <div className="mb-4">
+                    <label htmlFor="newCheckmark" className="form-label"><strong>Add New Activity</strong></label>
+                    <div className="d-flex">
+                        <input
+                            id="newCheckmark"
+                            type="text"
+                            className={`form-control me-2 ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-light'}`}
+                            value={newCheckmark}
+                            onChange={(e) => setNewCheckmark(e.target.value)}
+                            placeholder="Enter a new daily activity"
+                            disabled={tempCheckmarks.length >= MAX_CHECKMARKS}
+                        />
+                        <button
+                            type="button"
+                            className={addButtonClass}
+                            onClick={handleAddCheckmark}
+                            disabled={tempCheckmarks.length >= MAX_CHECKMARKS}
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <Droppable droppableId="checkmarks" type="checkmark">
+                    {(provided) => (
+                        <ul className="list-group mb-4" {...provided.droppableProps} ref={provided.innerRef}>
+                            {tempCheckmarks.map((checkmark, index) => (
+                                <Draggable key={`checkmark-${index}`} draggableId={`checkmark-${index}`} index={index}>
+                                    {(provided, snapshot) => (
+                                        <li
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-dark text-light border-secondary' : ''} ${snapshot.isDragging ? 'dragging' : ''}`}
+                                        >
+                                            <div className="d-flex align-items-center flex-grow-1">
+                                                <div
+                                                    {...provided.dragHandleProps}
+                                                    className="drag-handle"
+                                                >
+                                                    <i className="bi bi-grip-vertical"></i>
+                                                </div>
+                                                <div className="text-break text-capitalize">
+                                                    {checkmark}
+                                                </div>
+                                            </div>
+                                            <button className={deleteButtonClass} onClick={() => handleRemoveCheckmark(checkmark)}>
                                                 X
                                             </button>
                                         </li>
