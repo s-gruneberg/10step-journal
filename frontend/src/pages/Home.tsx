@@ -1,11 +1,9 @@
 // pages/Home.tsx
 import { useDarkMode } from '../context/DarkModeContext'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 
 const Home = () => {
   const { darkMode } = useDarkMode()
-  const { isAuthenticated } = useAuth()
   const primaryButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} btn-lg`
 
   return (

@@ -6,10 +6,6 @@ interface UserUsage {
     dates: string[];
 }
 
-interface ContributionGraphProps {
-    streaks: any[]; // Keep for backward compatibility
-}
-
 interface CalendarDay {
     date: Date;
     hasEntry: boolean;
@@ -27,7 +23,7 @@ interface PopupState {
     date: Date | null;
 }
 
-export default function ContributionGraph({ streaks }: ContributionGraphProps) {
+export default function ContributionGraph() {
     const { darkMode } = useDarkMode();
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const days = ['Mon', 'Wed', 'Fri'];

@@ -156,7 +156,7 @@ export default function Insights() {
                                 <p className="text-muted p-3">No journal entries yet.</p>
                             ) : (
                                 <>
-                                    <ContributionGraph streaks={streaks} />
+                                    <ContributionGraph />
                                     <div className="d-flex align-items-center justify-content-center py-3">
                                         <span className="text-muted me-2" style={{ fontSize: '12px' }}>Less</span>
                                         {[0, 1].map(level => (
