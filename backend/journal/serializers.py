@@ -25,16 +25,9 @@ class StreakSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username']
 
 class RegisterUserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(
-            queryset=User.objects.all(),
-            message="This email address is already registered."
-        )]
-    )
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -49,7 +42,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2']
+        fields = ['username', 'password', 'password2']
         extra_kwargs = {
             'username': {
                 'validators': [
@@ -79,7 +72,6 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
             password=validated_data['password']
         )
         return user

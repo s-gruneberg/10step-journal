@@ -30,7 +30,7 @@ DEBUG = True
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['10step-journal-production.up.railway.app', '10stepjournal.com', 'www.10stepjournal.com']
 
 
 # Application definition
@@ -72,8 +72,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
-    "https://10thstepjournal.com",
-    "https://www.10thstepjournal.com",
+    "https://10stepjournal.com",
+    "https://www.10stepjournal.com",
 ]
 
 # For development only - remove in production
@@ -194,7 +194,7 @@ from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }

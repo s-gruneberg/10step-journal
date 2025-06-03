@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import { defaultQuestions, defaultCheckmarks } from '../localStorageUtils';
 import { apiService } from '../services/api';
 import { AuthService } from '../services/auth';
+import { API_BASE_URL } from '../config';
 
-const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000';
 const APP_NAMESPACE = '10StepJournal';
 
 interface AuthContextType {
@@ -12,7 +12,7 @@ interface AuthContextType {
     user: any | null;
     login: (username: string, password: string) => Promise<void>;
     logout: () => void;
-    register: (username: string, email: string, password: string, password2: string) => Promise<void>;
+    register: (username: string, password: string, password2: string, recoveryDate?: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -145,13 +145,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await initializeUserData(); // Initialize with user's data from database
     };
 
-    const register = async (username: string, email: string, password: string, password2: string) => {
+    const register = async (username: string, password: string, password2: string, recoveryDate?: string) => {
         const response = await fetch(`${API_BASE_URL}/auth/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, email, password, password2 }),
+            body: JSON.stringify({ username, password, password2 }),
         });
 
         if (!response.ok) {
@@ -163,6 +163,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // First login to get the token
         await login(username, password);
+
+        // Set recovery date if provided
+        if (recoveryDate) {
+            try {
+                await apiService.updateUserSettings({ recovery_date: recoveryDate });
+            } catch (error) {
+                console.error('Failed to set recovery date during registration:', error);
+            }
+        }
 
         // Initialize user questions and checkmarks with defaults
         try {

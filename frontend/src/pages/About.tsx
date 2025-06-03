@@ -56,7 +56,7 @@ export default function About() {
                         Is this site free?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        Yes. This site is free to use and generates no revenue through ads or other means.
+                        Yes. This site is free to use.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -67,7 +67,11 @@ export default function About() {
                         Is my data safe?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        No data ever leaves your device.
+                        Yes. Your journal entry answers never leave your device.
+                        <br />
+                        <br />
+                        If you have an account, your custom questions, user information, and information about your streaks
+                        are stored in an industry standard secure way.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -97,7 +101,8 @@ export default function About() {
                         clear browsing data.
                         <br />
                         <br />
-                        The answers your write to the questions never leave your device.
+                        The answers your write to the questions never leave your device, if you have an account your custom questions
+                        and information about your streaks are stored on a database.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -108,10 +113,14 @@ export default function About() {
                         How do my custom questions get remembered?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        The way this works is that the questions are stored on your device's browser in something called localStorage.
+                        If you do not have an account, the questions are stored on your device's browser in something called localStorage.
+                        <br />
                         <br />
                         Purging your browser history, browser cache etc will likely delete this information. It's stored locally on
                         your browser and is not uploaded anywhere.
+                        <br />
+                        <br />
+                        If you have an account, your custom questions and information about your streaks are stored on a database.
                     </Accordion.Body>
                 </Accordion.Item>
 

@@ -78,6 +78,13 @@ const Header = () => {
                                 Settings
                             </NavLink>
                         </li>
+                        {!isAuthenticated && (
+                            <li className="nav-item">
+                                <NavLink to="/login" className="nav-link" onClick={() => setExpanded(false)}>
+                                    Login
+                                </NavLink>
+                            </li>
+                        )}
                         {isAuthenticated && (
                             <li className="nav-item">
                                 <button

@@ -8,7 +8,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import './index.css'
 import { ensureQuestionsInitialized } from './localStorageUtils'
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
 
 ensureQuestionsInitialized();
@@ -21,5 +20,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 )
 
-// Register service worker
-serviceWorkerRegistration.register();
