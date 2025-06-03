@@ -30,7 +30,7 @@ DEBUG = True
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -72,10 +72,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    "https://10thstepjournal.com",
+    "https://www.10thstepjournal.com",
 ]
 
 # For development only - remove in production
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 
 # Additional CORS settings
 CORS_ALLOW_CREDENTIALS = True

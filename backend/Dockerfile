@@ -8,13 +8,19 @@ ENV PORT=8080
 # Set working directory
 WORKDIR /app
 
-# Copy the rest of the codebase
-COPY . /app/
+# Install dependencies
+COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+# Copy the rest of the codebase
+COPY . /app/
+
 # Expose port
 EXPOSE ${PORT}
+
+# Set environment to production
+ENV DJANGO_SETTINGS_MODULE=backend.settings
 
 # Run the Django app using gunicorn
 CMD gunicorn backend.wsgi:application --bind 0.0.0.0:"${PORT}"
