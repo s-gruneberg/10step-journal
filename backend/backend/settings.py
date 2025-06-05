@@ -32,7 +32,6 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['10step-journal-production.up.railway.app', '10stepjournal.com', 'www.10stepjournal.com']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -203,11 +202,9 @@ SIMPLE_JWT = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 DEFAULT_FROM_EMAIL = 'noreply@10stepjournal.com'
 
-# In production, you would use something like:
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.your-email-provider.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+# Security Settings
+# if not DEBUG:
+#     SECURE_SSL_REDIRECT = True
+ 
 
