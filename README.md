@@ -10,7 +10,7 @@ Visit [10stepjournal.com](https://10stepjournal.com) to try the application.
 
 - User authentication and secure login
 - Daily journaling interface with customizable questions
-- Progress tracking and visualization
+- Users with an account can track and visualize history
 - Mobile-responsive design
 - PWA support for iOS and Android
 - Dark mode support
