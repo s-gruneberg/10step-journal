@@ -164,15 +164,19 @@ class StreakViewSet(viewsets.ModelViewSet):
             user=user,
             activity_type=activity_type,
             streak_type=streak_type,
-            defaults={'last_entry_date': entry_date}
+            defaults={'last_entry_date': entry_date, 'current_streak': 1, 'longest_streak': 1}
         )
 
         if is_completed:
-            if created or streak.last_entry_date == yesterday:
+            if created:
+                streak.current_streak = 1
+                streak.longest_streak = 1
+            elif streak.last_entry_date == yesterday:
                 streak.current_streak += 1
                 streak.longest_streak = max(streak.longest_streak, streak.current_streak)
             elif streak.last_entry_date < yesterday:
                 streak.current_streak = 1
+            # If the entry is for today or a new day, update last_entry_date
             streak.last_entry_date = entry_date
             streak.save()
         elif streak.last_entry_date < yesterday:
