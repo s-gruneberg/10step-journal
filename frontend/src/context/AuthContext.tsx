@@ -37,6 +37,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 });
             }
         }
+
+        // Set up a background process to silently refresh the token
+        const refreshInterval = setInterval(() => {
+            const currentToken = localStorage.getItem('accessToken');
+            if (currentToken && AuthService.isTokenExpired(currentToken)) {
+                AuthService.refreshToken().then(newToken => {
+                    if (newToken) {
+                        console.log('Token refreshed successfully');
+                    } else {
+                        console.log('Token refresh failed, logging out');
+                        logout();
+                    }
+                });
+            }
+        }, 60000); // Check every minute
+
+        return () => clearInterval(refreshInterval);
     }, []);
 
     const fetchUserData = async () => {
