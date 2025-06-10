@@ -55,9 +55,11 @@ export default function Inventory() {
 
             // Get today's date in user's local timezone
             const now = new Date();
-            const today = now.getFullYear() + '-' +
-                String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                String(now.getDate()).padStart(2, '0');
+            const today = now.toISOString().split('T')[0]; // Use ISO format for consistency
+
+            // Log the date and time for testing
+            console.log('Current date and time:', now);
+            console.log('Today\'s date in ISO format:', today);
 
             // Convert answers array to object for storage
             const answersObj: Record<number, string> = {};

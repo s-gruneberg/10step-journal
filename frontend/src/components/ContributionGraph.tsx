@@ -77,7 +77,7 @@ export default function ContributionGraph() {
     currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Start from Monday
 
     while (currentDate <= today) {
-        const dateStr = currentDate.toISOString().split('T')[0];
+        const dateStr = currentDate.toISOString().split('T')[0]; // Use ISO format for consistency
         const hasEntry = entryDates.has(dateStr);
 
         calendar.push({
