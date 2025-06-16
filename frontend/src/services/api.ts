@@ -25,12 +25,16 @@ interface UserSettings {
 class ApiService {
     private baseUrl: string;
     private headers: HeadersInit;
+    private requestQueue: Map<string, Promise<any>>;
+    private debounceTimers: Map<string, NodeJS.Timeout>;
 
     constructor() {
         this.baseUrl = API_BASE_URL;
         this.headers = {
             'Content-Type': 'application/json',
         };
+        this.requestQueue = new Map();
+        this.debounceTimers = new Map();
     }
 
     private async getAuthHeaders(): Promise<HeadersInit> {
@@ -82,6 +86,40 @@ class ApiService {
         return response.json();
     }
 
+    private async debouncedRequest<T>(
+        key: string,
+        requestFn: () => Promise<T>,
+        debounceTime: number = 1000
+    ): Promise<T> {
+        // Clear any existing timer
+        if (this.debounceTimers.has(key)) {
+            clearTimeout(this.debounceTimers.get(key));
+        }
+
+        // If there's an ongoing request, return its promise
+        if (this.requestQueue.has(key)) {
+            return this.requestQueue.get(key);
+        }
+
+        // Create a new promise for this request
+        const promise = new Promise<T>((resolve, reject) => {
+            this.debounceTimers.set(key, setTimeout(async () => {
+                try {
+                    const result = await requestFn();
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                } finally {
+                    this.requestQueue.delete(key);
+                    this.debounceTimers.delete(key);
+                }
+            }, debounceTime));
+        });
+
+        this.requestQueue.set(key, promise);
+        return promise;
+    }
+
     // User Questions API
     async getUserQuestions(): Promise<UserQuestions> {
         const response = await fetch(`${this.baseUrl}/api/user-questions/`, {
@@ -119,12 +157,15 @@ class ApiService {
         checkmarks: Record<string, boolean>;
         answers: Record<number, string>;
     }): Promise<Streak[]> {
-        const response = await fetch(`${this.baseUrl}/api/streaks/update_streak/`, {
-            method: 'POST',
-            headers: await this.getAuthHeaders(),
-            body: JSON.stringify(data)
+        const key = `updateStreak-${data.date}`;
+        return this.debouncedRequest(key, async () => {
+            const response = await fetch(`${this.baseUrl}/api/streaks/update_streak/`, {
+                method: 'POST',
+                headers: await this.getAuthHeaders(),
+                body: JSON.stringify(data)
+            });
+            return this.handleResponse<Streak[]>(response);
         });
-        return this.handleResponse<Streak[]>(response);
     }
 
     async getUserSettings(): Promise<UserSettings> {
@@ -173,12 +214,15 @@ class ApiService {
     }
 
     async addUsageDate(): Promise<UserUsage> {
-        const response = await fetch(`${this.baseUrl}/api/usage/add_date/`, {
-            method: 'POST',
-            headers: await this.getAuthHeaders(),
-            body: JSON.stringify({})
+        const key = 'addUsageDate';
+        return this.debouncedRequest(key, async () => {
+            const response = await fetch(`${this.baseUrl}/api/usage/add_date/`, {
+                method: 'POST',
+                headers: await this.getAuthHeaders(),
+                body: JSON.stringify({})
+            });
+            return this.handleResponse<UserUsage>(response);
         });
-        return this.handleResponse<UserUsage>(response);
     }
 }
 

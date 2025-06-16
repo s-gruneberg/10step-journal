@@ -101,14 +101,15 @@ CORS_ALLOW_HEADERS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'backend.middleware.RateLimitMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -201,6 +202,18 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
+}
+
+# Rate Limiting Settings
+RATE_LIMIT_ATTEMPTS = 5  # Number of attempts allowed
+RATE_LIMIT_WINDOW = 300  # Time window in seconds (5 minutes)
+RATE_LIMIT_BLOCK_TIME = 1800  # Block time in seconds (30 minutes)
+
+# Cache settings for rate limiting
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
 }
 
 

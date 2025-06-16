@@ -41,17 +41,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Set up a background process to silently refresh the token
         const refreshInterval = setInterval(() => {
             const currentToken = localStorage.getItem('accessToken');
-            if (currentToken && AuthService.isTokenExpired(currentToken)) {
-                AuthService.refreshToken().then(newToken => {
-                    if (newToken) {
-                        console.log('Token refreshed successfully');
-                    } else {
-                        console.log('Token refresh failed, logging out');
-                        logout();
-                    }
-                });
+            if (currentToken) {
+                // Only refresh if token is close to expiring (within 5 minutes)
+                const payload = JSON.parse(atob(currentToken.split('.')[1]));
+                const expirationTime = payload.exp * 1000; // Convert to milliseconds
+                const fiveMinutes = 5 * 60 * 1000;
+
+                if (Date.now() + fiveMinutes >= expirationTime) {
+                    AuthService.refreshToken().then(newToken => {
+                        if (newToken) {
+                            console.log('Token refreshed successfully');
+                        } else {
+                            console.log('Token refresh failed, logging out');
+                            logout();
+                        }
+                    });
+                }
             }
-        }, 60000); // Check every minute
+        }, 7200000); // Check every 2 hours instead of every 5 minutes
 
         return () => clearInterval(refreshInterval);
     }, []);

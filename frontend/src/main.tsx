@@ -5,12 +5,14 @@ import { DarkModeProvider } from './context/DarkModeContext'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import { registerServiceWorker } from './serviceWorkerRegistration'
 
 import './index.css'
 import { ensureQuestionsInitialized } from './localStorageUtils'
 
 
 ensureQuestionsInitialized();
+registerServiceWorker();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
