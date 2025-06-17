@@ -1,5 +1,6 @@
 // main.tsx or App.tsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import Header from './components/Header'
 import Inventory from './pages/Inventory.tsx'
 import About from './pages/About.tsx'
@@ -10,10 +11,12 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Insights from './pages/Insights'
 import { AuthProvider } from './context/AuthContext'
+import SEO from './components/SEO'
 
 function AppContent() {
   return (
     <Router>
+      <SEO />
       <Header />
       <div className="container my-5">
         <Routes>
@@ -33,9 +36,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </HelmetProvider>
   )
 }
 

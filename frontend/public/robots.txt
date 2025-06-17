@@ -1,0 +1,15 @@
+# Allow search engines to index public pages
+User-agent: *
+Allow: /$
+Allow: /about$
+Disallow: /login$
+Disallow: /register$
+
+# Disallow private routes
+Disallow: /inventory
+Disallow: /settings
+Disallow: /customize
+Disallow: /insights
+
+# Sitemap location
+Sitemap: https://10stepjournal.com/sitemap.xml 
