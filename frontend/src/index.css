@@ -13,16 +13,15 @@ body {
 }
 
 /* Dark mode overrides */
-body.dark {
+html.dark body {
     background-color: #121212;
     color: #f1f1f1;
 }
 
-body.dark .card {
+html.dark .card {
     background-color: #1e1e1e;
     border-color: #444;
 }
-
 
 /* Light mode textarea */
 .themed-textarea {
@@ -34,13 +33,12 @@ body.dark .card {
 }
 
 /* Dark mode textarea overrides */
-body.dark .themed-textarea {
+html.dark .themed-textarea {
     background-color: #605d5d;
     /* nice gray for dark bg */
     border: 1px solid #555;
     color: #eee;
 }
-
 
 /* logo home button */
 .logo-link,
