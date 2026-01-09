@@ -4,6 +4,9 @@
 <head>
   <!-- CRITICAL: Set theme before anything else -->
   <script>
+    // Version parameter for cache busting
+    const THEME_VERSION = '1.0.0';
+
     try {
       // Check localStorage first for user preference
       const journalData = JSON.parse(localStorage.getItem('10StepJournal.JournalData') || '{}');
@@ -61,30 +64,30 @@
   </style>
 
   <!-- Primary Meta Tags -->
-  <meta name="title" content="10 Step Journal - Daily Recovery Journal">
+  <meta name="title" content="10th Step Journal | Anonymous AA Step 10 Daily Inventory ">
   <meta name="description"
-    content="A daily journaling app for recovery, featuring the 10-step inventory process. Track your progress, maintain sobriety, and grow in your recovery journey.">
+    content="A free, anonymous 10th Step journal based on AA's Step 10 inventory. No ads, no account requirements, and no personal data collection. Fully customizable and private.">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://10stepjournal.com/">
-  <meta property="og:title" content="10 Step Journal - Daily Recovery Journal">
+  <meta property="og:title" content="10th Step Journal | Anonymous AA Step 10 Daily Inventory ">
   <meta property="og:description"
-    content="A daily journaling app for recovery, featuring the 10-step inventory process. Track your progress, maintain sobriety, and grow in your recovery journey.">
+    content="A free, anonymous 10th Step journal based on AA's Step 10 inventory. No ads, no account requirements, and no personal data collection. Fully customizable and private.">
   <meta property="og:image" content="https://10stepjournal.com/logo512.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://10stepjournal.com/">
-  <meta property="twitter:title" content="10 Step Journal - Daily Recovery Journal">
+  <meta property="twitter:title" content="10th Step Journal | Anonymous AA Step 10 Daily Inventory ">
   <meta property="twitter:description"
-    content="A daily journaling app for recovery, featuring the 10-step inventory process. Track your progress, maintain sobriety, and grow in your recovery journey.">
+    content="A free, anonymous 10th Step journal based on AA's Step 10 inventory. No ads, no account requirements, and no personal data collection. Fully customizable and private.">
   <meta property="twitter:image" content="https://10stepjournal.com/logo512.png">
 
   <!-- Reddit -->
-  <meta name="reddit-title" content="10 Step Journal - Daily Recovery Journal">
+  <meta name="reddit-title" content="10th Step Journal | Anonymous AA Step 10 Daily Inventory ">
   <meta name="reddit-description"
-    content="A daily journaling app for recovery, featuring the 10-step inventory process. Track your progress, maintain sobriety, and grow in your recovery journey.">
+    content="A free, anonymous 10th Step journal based on AA's Step 10 inventory. No ads, no account requirements, and no personal data collection. Fully customizable and private.">
   <meta name="reddit-image" content="https://10stepjournal.com/logo512.png">
   <meta name="reddit-url" content="https://10stepjournal.com/">
   <meta name="reddit-subreddit" content="r/stopdrinking,r/recovery,r/sobriety">
@@ -93,15 +96,15 @@
 
   <!-- Keywords -->
   <meta name="keywords"
-    content="recovery journal, sobriety tracker, 10 step inventory, daily journal, addiction recovery, sobriety app, recovery app">
+    content="10th step, AA step 10, recovery journal, sobriety tracker, 10 step inventory, addiction recovery, sobriety app, recovery app">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "10 Step Journal",
-    "description": "A daily journaling app for recovery, featuring the 10-step inventory process.",
+    "name": "10th Step Journal",
+    "description": "A daily journaling app for recovery, featuring the AA 10-step inventory process.",
     "url": "https://10stepjournal.com",
     "applicationCategory": "LifestyleApplication",
     "operatingSystem": "Web",

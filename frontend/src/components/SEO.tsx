@@ -10,9 +10,9 @@ interface SEOProps {
 }
 
 export default function SEO({
-    title = "10 Step Journal - Daily Recovery Journal",
-    description = "A daily journaling app for recovery, featuring the 10-step inventory process. Track your progress, maintain sobriety, and grow in your recovery journey.",
-    keywords = "recovery journal, sobriety tracker, 10 step inventory, daily journal, addiction recovery, sobriety app, recovery app, 10th step, 10th step journal",
+    title = "10th Step Journal | Anonymous AA Step 10 Daily Inventory ",
+    description = "A free, anonymous 10th Step journal based on AA's Step 10 inventory. No ads, no account requirements, and no personal data collection. Fully customizable and private.",
+    keywords = "10th step, AA, sobriety tracker, NA, step 10 inventory, addiction recovery, sobriety app, 10th step journal",
     image = "https://10stepjournal.com/logo512.png",
     url = "https://10stepjournal.com",
     type = "website"
