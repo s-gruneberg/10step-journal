@@ -17,8 +17,6 @@ const Settings = () => {
     };
 
     const toggleBtnClass = `btn ${darkMode ? 'btn-light' : 'btn-dark'}`
-    const dangerBtnClass = `btn ${darkMode ? 'btn-outline-danger' : 'btn-danger'}`
-    const primaryBtnClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`
 
     return (
         <div className="container mt-4">
