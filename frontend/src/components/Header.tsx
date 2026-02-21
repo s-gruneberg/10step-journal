@@ -17,7 +17,7 @@ const Header = () => {
                 <div className="d-flex justify-content-between align-items-center w-100 flex-wrap">
                     <div className="d-flex align-items-center">
                         <Link
-                            to="/"
+                            to="/home"
                             className="navbar-brand d-flex align-items-center mb-2 mb-md-0"
                             onClick={() => setExpanded(false)}
                         >

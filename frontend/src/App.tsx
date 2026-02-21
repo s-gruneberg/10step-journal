@@ -17,7 +17,8 @@ function AppContent() {
       <Header />
       <div className="container my-5">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Inventory />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/about" element={<About />} />
           <Route path="/settings" element={<Settings />} />
