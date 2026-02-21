@@ -137,9 +137,9 @@ export function saveCheckmarkStates(states: Record<string, boolean>) {
     localStorage.setItem(getNamespacedKey('CheckmarkStates'), JSON.stringify(states));
 }
 
-/* utils for answer manipulation with expiry */
+/* utils for answer manipulation - stored in sessionStorage */
 export function getAnswers(): Record<number, string> {
-    const stored = localStorage.getItem(getNamespacedKey('Answers'));
+    const stored = sessionStorage.getItem(getNamespacedKey('Answers'));
     if (!stored) return {};
     try {
         return JSON.parse(stored);
@@ -149,11 +149,12 @@ export function getAnswers(): Record<number, string> {
 }
 
 export function saveAnswers(answers: Record<number, string>) {
-    localStorage.setItem(getNamespacedKey('Answers'), JSON.stringify(answers));
+    sessionStorage.setItem(getNamespacedKey('Answers'), JSON.stringify(answers));
 }
 
 export function clearAnswers() {
-    localStorage.removeItem(getNamespacedKey('Answers'));
+    sessionStorage.removeItem(getNamespacedKey('Answers'));
+    // Also clear checkmark states from localStorage since they're part of the same entry
     localStorage.removeItem(getNamespacedKey('CheckmarkStates'));
 }
 

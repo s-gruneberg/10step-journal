@@ -93,11 +93,11 @@ export default function About() {
                         <br />
                         <br />
                         Your answers are temporarily stored in your browser's session storage,
-                        which means that they will be lost if you close your broswer tab or
+                        which means that they will be lost if you close your browser tab or
                         clear browsing data.
                         <br />
                         <br />
-                        The answers your write to the questions never leave your device unless you download them and send them somewhere yourself.
+                        The answers you write to the questions never leave your device unless you download them and send them somewhere yourself.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
