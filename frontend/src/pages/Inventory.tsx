@@ -4,8 +4,6 @@ import Questions from '../components/Questions'
 import { getQuestions, saveAnswers, getAnswers, getCheckmarkStates } from '../localStorageUtils.ts'
 import { downloadAsPDF, downloadAsWord, downloadAsText } from '../downloadUtils.ts'
 import { useDarkMode } from '../context/DarkModeContext.tsx'
-import { useAuth } from '../hooks/useAuth'
-import { apiService } from '../services/api'
 
 export default function Inventory() {
     const questions = getQuestions()
@@ -22,10 +20,6 @@ export default function Inventory() {
         return answersArray
     })
     const { darkMode } = useDarkMode()
-    const { isAuthenticated } = useAuth()
-    const [isSaving, setIsSaving] = useState(false)
-    const [saveError, setSaveError] = useState<string | null>(null)
-    const [showDuplicateMessage, setShowDuplicateMessage] = useState(false)
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
     const customizeButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} mb-4`
 
@@ -44,61 +38,7 @@ export default function Inventory() {
         saveAnswers(answersObj)
     }
 
-    const handleSave = async () => {
-        try {
-            setIsSaving(true);
-            setSaveError(null);
-            setShowDuplicateMessage(false);
-
-            // Get current checkmark states
-            const checkmarkStates = getCheckmarkStates();
-
-            // Get today's date in user's local timezone
-            const now = new Date();
-            const today = now.toISOString().split('T')[0]; // Use ISO format for consistency
-
-            // Log the date and time for testing
-            console.log('Current date and time:', now);
-            console.log('Today\'s date in ISO format:', today);
-
-            // Convert answers array to object for storage
-            const answersObj: Record<number, string> = {};
-            answers.forEach((answer, index) => {
-                if (answer.trim()) {
-                    answersObj[index] = answer;
-                }
-            });
-
-            try {
-                // Update streaks with both answers and checkmarks
-                await apiService.updateStreak({
-                    date: today,
-                    checkmarks: checkmarkStates,
-                    answers: answersObj
-                });
-
-                // Add today's date to usage
-                await apiService.addUsageDate();
-
-                // Save answers locally
-                saveAnswers(answersObj);
-            } catch (error: any) {
-                // Handle specific error cases
-                if (error.message.includes("already made a journal entry")) {
-                    setShowDuplicateMessage(true);
-                } else {
-                    setSaveError(error.message || 'Failed to update your streaks. Your answers are saved locally.');
-                }
-                // Still save answers locally even if streak update fails
-                saveAnswers(answersObj);
-            }
-        } catch (error) {
-            console.error('Failed to save:', error);
-            setSaveError('Failed to save your entry. Please try again.');
-        } finally {
-            setIsSaving(false);
-        }
-    };
+    // Save functionality removed - data is saved to localStorage automatically via handleAnswerChange
 
     const handleClear = () => {
         const emptyAnswers = Array(questions.length).fill('')
@@ -154,18 +94,6 @@ export default function Inventory() {
             </div>
             <hr className="mb-4 mt-0" />
 
-            {saveError && (
-                <div className="alert alert-warning alert-dismissible fade show" role="alert">
-                    {saveError}
-                    <button type="button" className="btn-close" onClick={() => setSaveError(null)} aria-label="Close"></button>
-                </div>
-            )}
-
-            {isSaving && (
-                <div className="alert alert-info" role="alert">
-                    Saving your entry...
-                </div>
-            )}
 
             <Questions
                 questions={questions}
@@ -206,47 +134,7 @@ export default function Inventory() {
                         </li>
                     </ul>
                 </div>
-                {isAuthenticated && (
-                    <button
-                        className={`btn ${darkMode ? 'btn-outline-success' : 'btn-success'}`}
-                        onClick={handleSave}
-                        disabled={isSaving}
-                    >
-                        {isSaving ? 'Saving...' : 'Complete'}
-                    </button>
-                )}
-                {/* {!isAuthenticated && (
-                    <div className="text-body-secondary">
-                        <small>Sign in to keep track of usage streaks</small>
-                    </div>
-                )} */}
             </div>
-
-            {/* Duplicate Entry Modal */}
-            {showDuplicateMessage && (
-                <div className="modal d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <div className="modal-dialog" role="document">
-                        <div className={`modal-content ${darkMode ? 'bg-dark text-light' : ''}`}>
-                            <div className="modal-header">
-                                <h5 className="modal-title">Journal Entry Exists</h5>
-                                <button type="button" className="btn-close" onClick={() => setShowDuplicateMessage(false)} aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <p>You have already saved a journal entry for today.</p>
-                            </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className={`btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`}
-                                    onClick={() => setShowDuplicateMessage(false)}
-                                >
-                                    OK
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     )
 }

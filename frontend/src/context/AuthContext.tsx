@@ -1,11 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import { defaultQuestions, defaultCheckmarks } from '../localStorageUtils';
-import { apiService } from '../services/api';
-import { AuthService } from '../services/auth';
-import { API_BASE_URL } from '../config';
-
-const APP_NAMESPACE = '10StepJournal';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -17,216 +11,24 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Simplified AuthProvider - no backend, always returns isAuthenticated=false
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [user, setUser] = useState<any | null>(null);
-
-    useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            if (!AuthService.isTokenExpired(token)) {
-                fetchUserData();
-            } else {
-                // Token is expired, try to refresh
-                AuthService.refreshToken().then(newToken => {
-                    if (newToken) {
-                        fetchUserData();
-                    } else {
-                        logout();
-                    }
-                });
-            }
-        }
-
-        // Set up a background process to silently refresh the token
-        const refreshInterval = setInterval(() => {
-            const currentToken = localStorage.getItem('accessToken');
-            if (currentToken) {
-                // Only refresh if token is close to expiring (within 5 minutes)
-                const payload = JSON.parse(atob(currentToken.split('.')[1]));
-                const expirationTime = payload.exp * 1000; // Convert to milliseconds
-                const fiveMinutes = 5 * 60 * 1000;
-
-                if (Date.now() + fiveMinutes >= expirationTime) {
-                    AuthService.refreshToken().then(newToken => {
-                        if (newToken) {
-                            console.log('Token refreshed successfully');
-                        } else {
-                            console.log('Token refresh failed, logging out');
-                            logout();
-                        }
-                    });
-                }
-            }
-        }, 7200000); // Check every 2 hours instead of every 5 minutes
-
-        return () => clearInterval(refreshInterval);
-    }, []);
-
-    const fetchUserData = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/user/`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                }
-            });
-            if (response.ok) {
-                const userData = await response.json();
-                setUser(userData);
-                setIsAuthenticated(true);
-            } else if (response.status === 401) {
-                // Try to refresh token
-                const newToken = await AuthService.refreshToken();
-                if (newToken) {
-                    // Retry with new token
-                    const retryResponse = await fetch(`${API_BASE_URL}/auth/user/`, {
-                        headers: {
-                            'Authorization': `Bearer ${newToken}`
-                        }
-                    });
-                    if (retryResponse.ok) {
-                        const userData = await retryResponse.json();
-                        setUser(userData);
-                        setIsAuthenticated(true);
-                    } else {
-                        logout();
-                    }
-                } else {
-                    logout();
-                }
-            } else {
-                logout();
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            logout();
-        }
-    };
-
-    const clearLocalStorage = () => {
-        // List all app-specific keys with their namespace
-        const keys = [
-            `${APP_NAMESPACE}.JournalData`,
-            `${APP_NAMESPACE}.Questions`,
-            `${APP_NAMESPACE}.Checkmarks`,
-            `${APP_NAMESPACE}.CheckmarkStates`,
-            `${APP_NAMESPACE}.Answers`
-        ];
-
-        // Remove each key
-        keys.forEach(key => {
-            localStorage.removeItem(key);
-        });
-    };
-
-    const initializeUserData = async () => {
-        // Initialize JournalData with theme preference
-        const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const journalData = {
-            darkMode: darkMode ? 'dark' : 'light'
-        };
-        localStorage.setItem(`${APP_NAMESPACE}.JournalData`, JSON.stringify(journalData));
-
-        try {
-            // Try to get user's questions and checkmarks from the database
-            const userQuestions = await apiService.getUserQuestions();
-
-            // Set the questions and checkmarks from the database
-            localStorage.setItem(`${APP_NAMESPACE}.Questions`, JSON.stringify(userQuestions.questions));
-            localStorage.setItem(`${APP_NAMESPACE}.Checkmarks`, JSON.stringify(userQuestions.checkmarks));
-        } catch (error) {
-            console.error('Failed to initialize user data from database:', error);
-
-            // Set defaults if database fetch fails
-            localStorage.setItem(`${APP_NAMESPACE}.Questions`, JSON.stringify(defaultQuestions));
-            localStorage.setItem(`${APP_NAMESPACE}.Checkmarks`, JSON.stringify(defaultCheckmarks));
-        }
-
-        // Always initialize empty states
-        localStorage.setItem(`${APP_NAMESPACE}.CheckmarkStates`, JSON.stringify({}));
-        localStorage.setItem(`${APP_NAMESPACE}.Answers`, JSON.stringify({}));
-    };
-
-    const login = async (username: string, password: string) => {
-        const response = await fetch(`${API_BASE_URL}/auth/login/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Login failed');
-        }
-
-        const data = await response.json();
-        clearLocalStorage(); // Clear any existing data
-        localStorage.setItem('accessToken', data.access);
-        localStorage.setItem('refreshToken', data.refresh);
-        await fetchUserData();
-        await initializeUserData(); // Initialize with user's data from database
-    };
-
-    const register = async (username: string, password: string, password2: string, recoveryDate?: string) => {
-        const response = await fetch(`${API_BASE_URL}/auth/register/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password, password2 }),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(Object.values(error).flat().join(', '));
-        }
-
-        clearLocalStorage(); // Clear any existing data
-
-        // First login to get the token
-        await login(username, password);
-
-        // Set recovery date if provided
-        if (recoveryDate) {
-            try {
-                await apiService.updateUserSettings({ recovery_date: recoveryDate });
-            } catch (error) {
-                console.error('Failed to set recovery date during registration:', error);
-            }
-        }
-
-        // Initialize user questions and checkmarks with defaults
-        try {
-            await apiService.saveUserQuestions({
-                questions: defaultQuestions,
-                checkmarks: defaultCheckmarks
-            });
-            await initializeUserData(); // Initialize localStorage with the defaults
-        } catch (error) {
-            console.error('Failed to initialize user questions:', error);
-            // Don't throw error here as registration was successful
-        }
-    };
-
-    const logout = () => {
-        // Clear auth tokens
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-
-        // Clear app-specific data
-        clearLocalStorage();
-
-        // Clear any remaining session storage
-        sessionStorage.clear();
-
-        setUser(null);
-        setIsAuthenticated(false);
+    const value: AuthContextType = {
+        isAuthenticated: false,
+        user: null,
+        login: async () => {
+            throw new Error('Login is not available. This is a static frontend-only application.');
+        },
+        logout: () => {
+            // No-op
+        },
+        register: async () => {
+            throw new Error('Registration is not available. This is a static frontend-only application.');
+        },
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout, register }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

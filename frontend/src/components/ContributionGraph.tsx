@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDarkMode } from '../context/DarkModeContext';
-import { apiService } from '../services/api';
-
-interface UserUsage {
-    dates: string[];
-}
 
 interface CalendarDay {
     date: Date;
@@ -35,20 +30,9 @@ export default function ContributionGraph() {
         y: 0,
         date: null
     });
-    const [usage, setUsage] = useState<UserUsage | null>(null);
 
-    // Fetch usage data
-    useEffect(() => {
-        const fetchUsage = async () => {
-            try {
-                const data = await apiService.getUserUsage();
-                setUsage(data);
-            } catch (error) {
-                console.error('Failed to fetch usage data:', error);
-            }
-        };
-        fetchUsage();
-    }, []);
+    // No backend data - contribution graph will show empty
+    const entryDates = new Set<string>();
 
     // Handle resize events
     useEffect(() => {
@@ -67,9 +51,6 @@ export default function ContributionGraph() {
     const today = new Date();
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(today.getMonth() - 6);
-
-    // Create a set of dates with entries
-    const entryDates = new Set(usage?.dates || []);
 
     // Generate calendar data
     const calendar: CalendarDay[] = [];

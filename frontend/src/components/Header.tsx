@@ -1,6 +1,5 @@
 import { useDarkMode } from '../context/DarkModeContext'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { Link, NavLink } from 'react-router-dom'
 import logo from '../assets/10steplogo.png'
 import { useState } from 'react'
 import './Header.css'
@@ -8,14 +7,6 @@ import './Header.css'
 const Header = () => {
     const { darkMode } = useDarkMode()
     const [expanded, setExpanded] = useState(false)
-    const { isAuthenticated, logout } = useAuth()
-    const navigate = useNavigate()
-
-    const handleLogout = () => {
-        logout()
-        navigate('/')
-        setExpanded(false)
-    }
 
     return (
         <nav
@@ -61,13 +52,6 @@ const Header = () => {
                                 Customize
                             </NavLink>
                         </li>
-                        {isAuthenticated && (
-                            <li className="nav-item">
-                                <NavLink to="/insights" className="nav-link" onClick={() => setExpanded(false)}>
-                                    Insights
-                                </NavLink>
-                            </li>
-                        )}
                         <li className="nav-item">
                             <NavLink to="/about" className="nav-link" onClick={() => setExpanded(false)}>
                                 About
@@ -78,23 +62,6 @@ const Header = () => {
                                 Settings
                             </NavLink>
                         </li>
-                        {!isAuthenticated && (
-                            <li className="nav-item">
-                                <NavLink to="/login" className="nav-link" onClick={() => setExpanded(false)}>
-                                    Login
-                                </NavLink>
-                            </li>
-                        )}
-                        {isAuthenticated && (
-                            <li className="nav-item">
-                                <button
-                                    className="btn btn-link nav-link"
-                                    onClick={handleLogout}
-                                >
-                                    Logout
-                                </button>
-                            </li>
-                        )}
                     </ul>
                 </div>
             </div>

@@ -67,11 +67,7 @@ export default function About() {
                         Is my data safe?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        Yes. Your journal entry answers never leave your device.
-                        <br />
-                        <br />
-                        If you have an account, your custom questions, user information, and information about your streaks
-                        are stored in an industry standard secure way.
+                        Yes. Your journal entry questions and answers never leave your device.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -82,7 +78,7 @@ export default function About() {
                         Where are the default questions from?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        The default questions are modeled after page 86 of the AA Big Book (4th edition).
+                        The default questions are from page 86 of the AA Big Book (4th edition).
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -101,8 +97,7 @@ export default function About() {
                         clear browsing data.
                         <br />
                         <br />
-                        The answers your write to the questions never leave your device, if you have an account your custom questions
-                        and information about your streaks are stored on a database.
+                        The answers your write to the questions never leave your device unless you download them and send them somewhere yourself.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -113,17 +108,37 @@ export default function About() {
                         How do my custom questions get remembered?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        If you do not have an account, the questions are stored on your device's browser in something called localStorage.
+                        The questions are stored on your device's browser in something called localStorage.
                         <br />
                         <br />
-                        Purging your browser history, browser cache etc will likely delete this information. It's stored locally on
-                        your browser and is not uploaded anywhere.
-                        <br />
-                        <br />
-                        If you have an account, your custom questions and information about your streaks are stored on a database.
+                        Purging your browser history or browser cache will likely delete this information. It's stored locally on
+                        your browser only and is not uploaded anywhere.
+
                     </Accordion.Body>
                 </Accordion.Item>
-
+                <Accordion.Item
+                    eventKey="5"
+                    className={darkMode ? 'bg-dark text-light border-secondary' : ''}
+                >
+                    <Accordion.Header>
+                        How do I use the customize feature?
+                    </Accordion.Header>
+                    <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
+                        Head over to the Customize page and add or remove questions as you please.
+                        <br />
+                        <br />
+                        To add a question or a daily task, type it into the input field and click the "Add" button.
+                        <br />
+                        <br />
+                        To remove, click the red "X" button next to the question or daily task.
+                        <br />
+                        <br />
+                        To reorder, click and hold the question or daily task and drag it to the desired position.
+                        <br />
+                        <br />
+                        Important: If you don't click save, the questions will not change.
+                    </Accordion.Body>
+                </Accordion.Item>
                 <Accordion.Item
                     eventKey="6"
                     className={darkMode ? 'bg-dark text-light border-secondary' : ''}

@@ -7,6 +7,14 @@ export default defineConfig({
   define: {
     'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL)
   },
+  server: {
+    headers: {
+      // Prevent caching of HTML files in development
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  },
   build: {
     rollupOptions: {
       output: {

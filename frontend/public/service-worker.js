@@ -1,7 +1,6 @@
 const CACHE_NAME = '10step-journal-v1';
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
+    // Removed '/' and '/index.html' to prevent HTML caching
     '/assets/10steplogo.png',
     '/manifest.json'
 ];
@@ -45,6 +44,11 @@ self.addEventListener('fetch', (event) => {
 
     // Skip API requests that need fresh data
     if (event.request.url.includes('/api/')) {
+        return;
+    }
+
+    // Skip HTML files to prevent flash - always fetch fresh
+    if (event.request.url.endsWith('.html') || event.request.url === self.location.origin + '/' || event.request.url === self.location.origin + '/index.html') {
         return;
     }
 

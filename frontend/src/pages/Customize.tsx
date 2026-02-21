@@ -9,8 +9,6 @@ import {
     setCheckmarks
 } from '../localStorageUtils'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import { apiService } from '../services/api'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import type { DropResult } from '@hello-pangea/dnd'
 import './Customize.css'
@@ -20,7 +18,6 @@ const MAX_CHECKMARKS = 6
 
 export default function CustomizeQuestions() {
     const { darkMode } = useDarkMode()
-    const { isAuthenticated } = useAuth()
     const [tempQuestions, setTempQuestions] = useState<string[]>([])
     const [tempCheckmarks, setTempCheckmarks] = useState<string[]>([])
     const [newQuestion, setNewQuestion] = useState<string>('')
@@ -31,26 +28,20 @@ export default function CustomizeQuestions() {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const loadData = async () => {
+        const loadData = () => {
             setIsLoading(true)
             try {
-                if (isAuthenticated) {
-                    const userQuestions = await apiService.getUserQuestions()
-                    setTempQuestions(userQuestions.questions)
-                    setTempCheckmarks(userQuestions.checkmarks)
-                } else {
-                    setTempQuestions(getQuestions())
-                    setTempCheckmarks(getCheckmarks())
-                }
+                setTempQuestions(getQuestions())
+                setTempCheckmarks(getCheckmarks())
             } catch (error) {
-                console.error('Failed to load user questions:', error)
+                console.error('Failed to load questions:', error)
                 setError('Failed to load your saved questions. Please try again later.')
             } finally {
                 setIsLoading(false)
             }
         }
         loadData()
-    }, [isAuthenticated])
+    }, [])
 
     const handleAddQuestion = () => {
         const trimmed = newQuestion.trim()
@@ -96,25 +87,14 @@ export default function CustomizeQuestions() {
         setHasChanges(true)
     }
 
-    const handleSave = async () => {
+    const handleSave = () => {
         setIsSaving(true);
         setError(null);
 
         try {
-            if (isAuthenticated) {
-                // For authenticated users, save to backend
-                await apiService.saveUserQuestions({
-                    questions: tempQuestions,
-                    checkmarks: tempCheckmarks
-                });
-                // After successful save to backend, update localStorage to stay in sync
-                setQuestions(tempQuestions);
-                setCheckmarks(tempCheckmarks);
-            } else {
-                // For non-authenticated users, save to local storage only
-                setQuestions(tempQuestions);
-                setCheckmarks(tempCheckmarks);
-            }
+            // Save to local storage only
+            setQuestions(tempQuestions);
+            setCheckmarks(tempCheckmarks);
             setHasChanges(false);
         } catch (err) {
             console.error('Failed to save changes:', err);
@@ -161,7 +141,7 @@ export default function CustomizeQuestions() {
                 <div className="d-flex justify-content-between align-items-center">
                     <h1 className="mb-2">Customize</h1>
                     <Link to="/inventory" className={`btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`}>
-                        Back
+                        Inventory
                     </Link>
                     <button
                         className={saveButtonClass}
