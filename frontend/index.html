@@ -57,11 +57,27 @@
       visibility: hidden;
     }
 
+    /* Set dark background for splash screen */
+    body {
+      background-color: #121212;
+      margin: 0;
+      padding: 0;
+    }
+
     html.dark body {
       background-color: #121212;
       color: #f1f1f1;
     }
+
+    html.light body {
+      background-color: #ffffff;
+      color: #000000;
+    }
   </style>
+  
+  <!-- Theme color for splash screen and browser chrome -->
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 
   <!-- Primary Meta Tags -->
   <meta name="title" content="10th Step Journal | Anonymous AA Step 10 Daily Inventory ">
