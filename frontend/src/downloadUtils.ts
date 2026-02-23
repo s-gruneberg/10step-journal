@@ -15,21 +15,25 @@ interface JournalContent {
     checkmarks: Record<string, boolean>;
 }
 
+const hasCheckmarks = (checkmarks: Record<string, boolean>) => Object.keys(checkmarks).length > 0
+
 /** Build the same plain-text format used for download/copy */
 export function getTextContent({ title, qa, checkmarks }: JournalContent): string {
     const lines = [`${title}\n\n`]
 
-    // Add checkmarks section
-    lines.push('Daily Activities:\n')
-    Object.entries(checkmarks).forEach(([activity, checked]) => {
-        lines.push(`${activity}: ${checked ? 'Yes' : 'No'}\n`)
-    })
-    lines.push('\nInventory Questions:\n')
-
-    // Add Q&A section
+    // Inventory Questions first
+    lines.push('Inventory Questions:\n')
     qa.forEach(({ q, a }, i) => {
         lines.push(`${i + 1}. ${q}\n${a}\n`)
     })
+
+    // Daily Activities at the end, only if any are present/checked
+    if (hasCheckmarks(checkmarks)) {
+        lines.push('\nDaily Activities:\n')
+        Object.entries(checkmarks).forEach(([activity, checked]) => {
+            lines.push(`${activity}: ${checked ? 'Yes' : 'No'}\n`)
+        })
+    }
 
     return lines.join('\n')
 }
@@ -48,21 +52,7 @@ export function downloadAsPDF({ title, qa, checkmarks }: JournalContent) {
 
     let y = 30
 
-    // Add checkmarks section
-    doc.setFontSize(14)
-    doc.text('Daily Activities:', 10, y)
-    y += 10
-    doc.setFontSize(12)
-
-    Object.entries(checkmarks).forEach(([activity, checked]) => {
-        doc.text(`${activity}: ${checked ? 'Yes' : 'No'}`, 10, y)
-        y += 7
-    })
-
-    // Add spacing between sections
-    y += 10
-
-    // Add Q&A section
+    // Inventory Questions first
     doc.setFontSize(14)
     doc.text('Inventory Questions:', 10, y)
     y += 10
@@ -82,6 +72,19 @@ export function downloadAsPDF({ title, qa, checkmarks }: JournalContent) {
         }
     })
 
+    // Daily Activities at the end, only if any are present/checked
+    if (hasCheckmarks(checkmarks)) {
+        y += 10
+        doc.setFontSize(14)
+        doc.text('Daily Activities:', 10, y)
+        y += 10
+        doc.setFontSize(12)
+        Object.entries(checkmarks).forEach(([activity, checked]) => {
+            doc.text(`${activity}: ${checked ? 'Yes' : 'No'}`, 10, y)
+            y += 7
+        })
+    }
+
     doc.save(formatFilename('pdf'))
 }
 
@@ -92,18 +95,6 @@ export async function downloadAsWord({ title, qa, checkmarks }: JournalContent) 
         }),
         new Paragraph({ text: '' }),
         new Paragraph({
-            children: [new TextRun({ text: 'Daily Activities:', bold: true, size: 24 })],
-        }),
-        ...Object.entries(checkmarks).map(([activity, checked]) =>
-            new Paragraph({
-                children: [
-                    new TextRun({ text: `${activity}: `, bold: true }),
-                    new TextRun({ text: checked ? 'Yes' : 'No' })
-                ],
-            })
-        ),
-        new Paragraph({ text: '' }),
-        new Paragraph({
             children: [new TextRun({ text: 'Inventory Questions:', bold: true, size: 24 })],
         }),
         ...qa.flatMap(({ q, a }, i) => [
@@ -112,6 +103,24 @@ export async function downloadAsWord({ title, qa, checkmarks }: JournalContent) 
             new Paragraph({ text: '' }),
         ]),
     ]
+
+    // Daily Activities at the end, only if any are present/checked
+    if (hasCheckmarks(checkmarks)) {
+        paragraphs.push(new Paragraph({ text: '' }))
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: 'Daily Activities:', bold: true, size: 24 })],
+        }))
+        paragraphs.push(
+            ...Object.entries(checkmarks).map(([activity, checked]) =>
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `${activity}: `, bold: true }),
+                        new TextRun({ text: checked ? 'Yes' : 'No' })
+                    ],
+                })
+            )
+        )
+    }
 
     const doc = new Document({ sections: [{ children: paragraphs }] })
     const blob = await Packer.toBlob(doc)

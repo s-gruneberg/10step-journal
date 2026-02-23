@@ -22,7 +22,7 @@ export default function Inventory() {
     const { darkMode } = useDarkMode()
     const [copyFeedback, setCopyFeedback] = useState<string | null>(null)
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
-    const copyButtonClass = `btn ${darkMode ? 'btn-outline-secondary' : 'btn-secondary'}`
+    const copyButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'}`
     const customizeButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} mb-4`
 
     const handleAnswerChange = (index: number, value: string) => {

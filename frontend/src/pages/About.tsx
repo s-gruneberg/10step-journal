@@ -97,7 +97,7 @@ export default function About() {
                         clear browsing data.
                         <br />
                         <br />
-                        The answers you write to the questions never leave your device unless you download them and send them somewhere yourself.
+                        The answers you write to the questions never leave your device unless you download or copy them and send them somewhere yourself.
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item
@@ -108,7 +108,7 @@ export default function About() {
                         How do my custom questions get remembered?
                     </Accordion.Header>
                     <Accordion.Body className={darkMode ? 'bg-dark text-light' : ''}>
-                        The questions are stored on your device's browser in something called localStorage.
+                        The questions are stored on your device's browser in something called "localStorage.""
                         <br />
                         <br />
                         Purging your browser history or browser cache will likely delete this information. It's stored locally on
