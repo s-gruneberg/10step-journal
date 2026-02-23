@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Questions from '../components/Questions'
 import { getQuestions, saveAnswers, getAnswers, getCheckmarkStates } from '../localStorageUtils.ts'
-import { downloadAsPDF, downloadAsWord, downloadAsText } from '../downloadUtils.ts'
+import { downloadAsPDF, downloadAsWord, downloadAsText, getTextContent } from '../downloadUtils.ts'
 import { useDarkMode } from '../context/DarkModeContext.tsx'
 
 export default function Inventory() {
@@ -20,7 +20,9 @@ export default function Inventory() {
         return answersArray
     })
     const { darkMode } = useDarkMode()
+    const [copyFeedback, setCopyFeedback] = useState<string | null>(null)
     const buttonClass = `btn ${darkMode ? 'btn btn-outline-success dropdown-toggle' : 'btn btn-success dropdown-toggle'}`
+    const copyButtonClass = `btn ${darkMode ? 'btn-outline-secondary' : 'btn-secondary'}`
     const customizeButtonClass = `btn ${darkMode ? 'btn-outline-primary' : 'btn-primary'} mb-4`
 
     const handleAnswerChange = (index: number, value: string) => {
@@ -69,20 +71,31 @@ export default function Inventory() {
         }
     }, [questions.length])
 
-    const handleDownload = (downloadFn: (content: { title: string; qa: { q: string; a: string }[]; checkmarks: Record<string, boolean> }) => void) => {
-        const qaPairs = questions.map((q, i) => ({ q, a: answers[i] || '' }));
+    const getJournalContent = () => {
+        const qaPairs = questions.map((q, i) => ({ q, a: answers[i] || '' }))
         const now = new Date()
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
         const dateString = now.toLocaleDateString()
         const title = `10th Step Journal - ${dateString} ${timeString}`
-        const checkmarkStates = getCheckmarkStates()
+        return { title, qa: qaPairs, checkmarks: getCheckmarkStates() }
+    }
 
-        downloadFn({
-            title,
-            qa: qaPairs,
-            checkmarks: checkmarkStates
-        });
-    };
+    const handleDownload = (downloadFn: (content: { title: string; qa: { q: string; a: string }[]; checkmarks: Record<string, boolean> }) => void) => {
+        downloadFn(getJournalContent())
+    }
+
+    const handleCopy = async () => {
+        const content = getJournalContent()
+        const text = getTextContent(content)
+        try {
+            await navigator.clipboard.writeText(text)
+            setCopyFeedback('Copied!')
+            setTimeout(() => setCopyFeedback(null), 2000)
+        } catch {
+            setCopyFeedback('Copy failed')
+            setTimeout(() => setCopyFeedback(null), 2000)
+        }
+    }
 
     return (
         <>
@@ -101,38 +114,49 @@ export default function Inventory() {
                 onAnswerChange={handleAnswerChange}
                 onClear={handleClear}
             />
-            <div className="d-flex justify-content-between align-items-center mt-4">
-
-                <div className="dropdown">
-                    <button className={buttonClass} type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Download
+            <div className="d-flex justify-content-between align-items-center mt-4 gap-2 flex-wrap">
+                <div className="d-flex align-items-center gap-2">
+                    <div className="dropdown">
+                        <button className={buttonClass} type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Download
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={() => handleDownload(downloadAsPDF)}
+                                >
+                                    Download PDF
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={() => handleDownload(downloadAsWord)}
+                                >
+                                    Download Word
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={() => handleDownload(downloadAsText)}
+                                >
+                                    Download Text
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <button
+                        type="button"
+                        className={copyButtonClass}
+                        onClick={handleCopy}
+                        title="Copy to clipboard"
+                        aria-label="Copy questions and answers to clipboard"
+                    >
+                        <i className="bi bi-clipboard me-1" aria-hidden="true" />
+                        {copyFeedback ?? 'Copy'}
                     </button>
-                    <ul className="dropdown-menu">
-                        <li>
-                            <button
-                                className="dropdown-item"
-                                onClick={() => handleDownload(downloadAsPDF)}
-                            >
-                                Download PDF
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className="dropdown-item"
-                                onClick={() => handleDownload(downloadAsWord)}
-                            >
-                                Download Word
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className="dropdown-item"
-                                onClick={() => handleDownload(downloadAsText)}
-                            >
-                                Download Text
-                            </button>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </>

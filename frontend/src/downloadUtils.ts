@@ -15,7 +15,8 @@ interface JournalContent {
     checkmarks: Record<string, boolean>;
 }
 
-export function downloadAsText({ title, qa, checkmarks }: JournalContent) {
+/** Build the same plain-text format used for download/copy */
+export function getTextContent({ title, qa, checkmarks }: JournalContent): string {
     const lines = [`${title}\n\n`]
 
     // Add checkmarks section
@@ -30,7 +31,12 @@ export function downloadAsText({ title, qa, checkmarks }: JournalContent) {
         lines.push(`${i + 1}. ${q}\n${a}\n`)
     })
 
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
+    return lines.join('\n')
+}
+
+export function downloadAsText({ title, qa, checkmarks }: JournalContent) {
+    const text = getTextContent({ title, qa, checkmarks })
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     saveAs(blob, formatFilename('txt'))
 }
 
