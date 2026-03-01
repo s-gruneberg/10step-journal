@@ -1,6 +1,6 @@
 {
-    "name": "10 Step Journal",
-    "short_name": "10Step",
+    "name": "10th Step Journal",
+    "short_name": "10th Step",
     "description": "A daily journaling app for recovery, featuring the 10-step inventory process",
     "start_url": "/",
     "display": "standalone",
