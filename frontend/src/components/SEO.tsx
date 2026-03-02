@@ -13,7 +13,7 @@ export default function SEO({
     title = "10th Step Journal | Anonymous AA Step 10 Daily Inventory ",
     description = "A free, anonymous 10th Step journal based on AA's Step 10 inventory. No ads, no account requirements, and no personal data collection. Fully customizable and private.",
     keywords = "10th step, AA, sobriety tracker, NA, step 10 inventory, addiction recovery, sobriety app, 10th step journal",
-    image = "https://10stepjournal.com/logo512.png",
+    image = "https://10stepjournal.com/og_image.png",
     url = "https://10stepjournal.com",
     type = "website"
 }: SEOProps) {
