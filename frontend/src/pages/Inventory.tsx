@@ -72,11 +72,15 @@ export default function Inventory() {
     }, [questions.length])
 
     const getJournalContent = () => {
-        const qaPairs = questions.map((q, i) => ({ q, a: answers[i] || '' }))
+        // Only include questions that have a non-empty answer
+        const qaPairs = questions
+            .map((q, i) => ({ q, a: answers[i] || '' }))
+            .filter(({ a }) => a.trim().length > 0)
+
         const now = new Date()
-        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         const dateString = now.toLocaleDateString()
-        const title = `10th Step Journal - ${dateString} ${timeString}`
+        const title = `10th Step - ${dateString} ${timeString}`
         return { title, qa: qaPairs, checkmarks: getCheckmarkStates() }
     }
 
